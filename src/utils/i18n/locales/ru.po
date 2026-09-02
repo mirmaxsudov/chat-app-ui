@@ -1,0 +1,53 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-09-01 20:16+0500\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: ru\n"
+
+msgid "Access Forbidden"
+msgstr ""
+
+msgid "Back to Home"
+msgstr ""
+
+msgid "Back to Login"
+msgstr ""
+
+msgid "Enter your username and password below to log into your account."
+msgstr ""
+
+msgid "Go Back"
+msgstr ""
+
+msgid "It seems like the page you're looking for does not exist or might have been removed."
+msgstr ""
+
+msgid "Login"
+msgstr ""
+
+msgid "Oops! Page Not Found!"
+msgstr ""
+
+msgid "Oops! Something went wrong :')"
+msgstr ""
+
+msgid "Please log in with the appropriate credentials to access this resource."
+msgstr ""
+
+msgid "Refresh"
+msgstr ""
+
+msgid "Something went wrong!"
+msgstr ""
+
+msgid "This is a simple login page."
+msgstr ""
+
+msgid "Unauthorized Access"
+msgstr ""
+
+msgid "You don't have necessary permission to view this resource."
+msgstr ""
