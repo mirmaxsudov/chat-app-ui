@@ -1,4 +1,5 @@
-const AUTH_SESSION_KEY = 'chat_app_auth_session';
+export const AUTH_SESSION_KEY = 'chat_app_auth_session';
+export const AUTH_SESSION_CHANGED = 'chat-app:session-changed';
 const EXPIRY_SKEW_MS = 30_000;
 
 export interface AuthSession {
@@ -18,11 +19,14 @@ const isAuthSession = (value: unknown): value is AuthSession => {
 };
 
 export const clearAuthSession = () => {
+  const hadSession = localStorage.getItem(AUTH_SESSION_KEY) !== null;
   localStorage.removeItem(AUTH_SESSION_KEY);
+  if (hadSession) window.dispatchEvent(new Event(AUTH_SESSION_CHANGED));
 };
 
 export const saveAuthSession = (session: AuthSession) => {
   localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(session));
+  window.dispatchEvent(new Event(AUTH_SESSION_CHANGED));
 };
 
 export const getAuthSession = (): AuthSession | null => {

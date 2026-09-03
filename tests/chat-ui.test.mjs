@@ -11,6 +11,7 @@ test('chat UI loads API data, keeps failed drafts, and displays only confirmed s
   });
   const keys = [
     'window',
+    'localStorage',
     'document',
     'HTMLElement',
     'Element',
@@ -51,7 +52,7 @@ test('chat UI loads API data, keeps failed drafts, and displays only confirmed s
   const server = await createServer({
     configFile: false,
     resolve: { alias: { '@': resolve('src') } },
-    server: { middlewareMode: true },
+    server: { middlewareMode: true, ws: false },
     appType: 'custom'
   });
   t.after(() => server.close());

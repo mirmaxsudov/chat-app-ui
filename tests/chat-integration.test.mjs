@@ -8,7 +8,7 @@ import { QueryClient } from '@tanstack/react-query';
 const server = await createServer({
   configFile: false,
   resolve: { alias: { '@': resolve('src') } },
-  server: { middlewareMode: true },
+  server: { middlewareMode: true, ws: false },
   appType: 'custom'
 });
 after(() => server.close());

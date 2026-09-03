@@ -19,9 +19,9 @@ export const ChatLayout = ({ currentUser, onLogout }: ChatLayoutProps) => {
   const [creatingChat, setCreatingChat] = useState(false);
   const chatsQuery = useInfiniteQuery({
     ...chatsInfiniteQueryOptions(),
-    refetchInterval: 15_000,
     meta: { withoutToastOnError: true }
   });
+
   const chats = useMemo(
     () =>
       [

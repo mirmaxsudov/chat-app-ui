@@ -5,8 +5,10 @@ import { currentUserQueryOptions } from '@/entities/user';
 import { clearAuthSession, getAuthSession } from '@/features/auth';
 import { NotFoundError } from '@/shared/ui/errors';
 import { PageLoading } from '@/shared/ui/layout';
+import { useChatRealtime } from '@/features/chat/realtime/use-chat-realtime';
 
 const AuthenticatedLayout = () => {
+  useChatRealtime();
   return <Outlet />;
 };
 

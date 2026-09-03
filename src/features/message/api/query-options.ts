@@ -1,6 +1,7 @@
 import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
 
 import { getChatMessages, type GetChatMessagesRequest } from './message.api';
+import { mergeLatestMessages, mergeMessageHistory } from '../model/message-cache';
 
 export const messageQueryKeys = {
   all: ['messages'] as const,
@@ -23,6 +24,10 @@ export const chatMessagesQueryOptions = (request: GetChatMessagesRequest) => {
   return queryOptions({
     queryKey: messageQueryKeys.history(params),
     queryFn: ({ signal }) => getChatMessages(params, signal),
+    structuralSharing:
+      params.beforeSeq === undefined
+        ? (old, next) => mergeLatestMessages(old, next, params.size ?? 50)
+        : true,
     enabled: Boolean(params.chatId),
     staleTime: 0
   });
@@ -45,5 +50,6 @@ export const chatMessagesInfiniteQueryOptions = ({
     getNextPageParam: (lastPage) =>
       lastPage.hasMore ? (lastPage.nextBeforeSeq ?? undefined) : undefined,
     enabled: Boolean(chatId),
+    structuralSharing: (old, next) => mergeMessageHistory(old, next, size),
     staleTime: 0
   });

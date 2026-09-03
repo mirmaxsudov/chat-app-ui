@@ -1,13 +1,10 @@
 import { useMemo, useState } from 'react';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/shared/ui/button';
-import {
-  chatMessagesInfiniteQueryOptions,
-  messageQueryKeys,
-  postSendMessage
-} from '@/features/message';
-import { insertConfirmedMessage } from '@/features/message/model/message-cache';
-import { chatByIdQueryOptions, chatQueryKeys } from '../api';
+import { chatMessagesInfiniteQueryOptions, postSendMessage } from '@/features/message';
+import { chatByIdQueryOptions } from '../api';
+import { applyMessageToCache } from '../model/chat-cache';
+import { getAuthSession } from '@/features/auth/session';
 import { chronologicalMessages, toChatSummary } from '../model/chat-view';
 import { requestErrorMessage } from '../model/request-error';
 import { ChatDetails } from './ChatDetails';
@@ -24,7 +21,6 @@ export const ChatConversation = ({ chatId, onBack }: { chatId: string; onBack: (
   const history = useInfiniteQuery({
     ...historyOptions,
     enabled: chat.isSuccess,
-    refetchInterval: 15_000,
     meta: { withoutToastOnError: true }
   });
   const messages = useMemo(() => chronologicalMessages(history.data?.pages ?? []), [history.data]);
@@ -33,18 +29,10 @@ export const ChatConversation = ({ chatId, onBack }: { chatId: string; onBack: (
     mutationFn: (text: string) => postSendMessage({ chatId, data: { text } }),
     retry: false,
     meta: { withoutToastOnError: true },
-    onSuccess: async (message) => {
-      await queryClient.cancelQueries({ queryKey: messageQueryKeys.byChat(chatId) });
-      queryClient.setQueryData(historyOptions.queryKey, (old) =>
-        insertConfirmedMessage(old, message)
-      );
-      queryClient.setQueryData(chatByIdQueryOptions(chatId).queryKey, (old) =>
-        old && (!old.lastMessage || old.lastMessage.seq <= message.seq)
-          ? { ...old, lastMessage: message, updatedAt: message.createdAt }
-          : old
-      );
-      void queryClient.invalidateQueries({ queryKey: messageQueryKeys.byChat(chatId) });
-      void queryClient.invalidateQueries({ queryKey: chatQueryKeys.lists() });
+    onMutate: () => ({ accessToken: getAuthSession()?.accessToken }),
+    onSuccess: (message, _text, context) => {
+      if (context?.accessToken === getAuthSession()?.accessToken)
+        applyMessageToCache(queryClient, chatId, message);
     }
   });
 

@@ -34,6 +34,7 @@ export const toChatSummary = (chat: Chat) => {
           : chat.type === 'GROUP'
             ? 'Group chat'
             : 'Channel');
+
   const hash = [...chat.id].reduce((total, char) => total + char.charCodeAt(0), 0);
   const timestamp = chat.lastMessage?.createdAt ?? chat.updatedAt;
   const date = new Date(timestamp);
