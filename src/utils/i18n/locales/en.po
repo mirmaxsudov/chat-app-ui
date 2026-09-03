@@ -6,48 +6,80 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: @lingui/cli\n"
 "Language: en\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
 
-msgid "Access Forbidden"
-msgstr "Access Forbidden"
-
-msgid "Back to Home"
-msgstr "Back to Home"
-
-msgid "Back to Login"
-msgstr "Back to Login"
-
-msgid "Enter your username and password below to log into your account."
-msgstr "Enter your username and password below to log into your account."
-
-msgid "Go Back"
-msgstr "Go Back"
-
-msgid "It seems like the page you're looking for does not exist or might have been removed."
-msgstr "It seems like the page you're looking for does not exist or might have been removed."
-
-msgid "Login"
-msgstr "Login"
-
-msgid "Oops! Page Not Found!"
-msgstr "Oops! Page Not Found!"
-
-msgid "Oops! Something went wrong :')"
-msgstr "Oops! Something went wrong :')"
-
-msgid "Please log in with the appropriate credentials to access this resource."
-msgstr "Please log in with the appropriate credentials to access this resource."
-
-msgid "Refresh"
-msgstr "Refresh"
-
-msgid "Something went wrong!"
-msgstr "Something went wrong!"
-
-msgid "This is a simple login page."
-msgstr "This is a simple login page."
-
+#. js-lingui-explicit-id
 msgid "Unauthorized Access"
 msgstr "Unauthorized Access"
 
+#. js-lingui-explicit-id
+msgid "Please log in with the appropriate credentials to access this resource."
+msgstr "Please log in with the appropriate credentials to access this resource."
+
+#. js-lingui-explicit-id
+msgid "Go Back"
+msgstr "Go Back"
+
+#. js-lingui-explicit-id
+msgid "Back to Login"
+msgstr "Back to Login"
+
+#. js-lingui-explicit-id
+msgid "Access Forbidden"
+msgstr "Access Forbidden"
+
+#. js-lingui-explicit-id
 msgid "You don't have necessary permission to view this resource."
 msgstr "You don't have necessary permission to view this resource."
+
+#. js-lingui-explicit-id
+msgid "Back to Home"
+msgstr "Back to Home"
+
+#. js-lingui-explicit-id
+msgid "Oops! Something went wrong :')"
+msgstr "Oops! Something went wrong :')"
+
+#. js-lingui-explicit-id
+msgid "Refresh"
+msgstr "Refresh"
+
+#. js-lingui-explicit-id
+msgid "Oops! Page Not Found!"
+msgstr "Oops! Page Not Found!"
+
+#. js-lingui-explicit-id
+msgid "It seems like the page you're looking for does not exist or might have been removed."
+msgstr "It seems like the page you're looking for does not exist or might have been removed."
+
+msgid "{selectedCount} of {pageCount} row(s) selected."
+msgstr "{selectedCount} of {pageCount} row(s) selected."
+
+msgid "{selectedSize} selected"
+msgstr "{selectedSize} selected"
+
+msgid "{title} slider"
+msgstr "{title} slider"
+
+msgid "Clear"
+msgstr "Clear"
+
+msgid "Clear {title} filter"
+msgstr "Clear {title} filter"
+
+msgid "From"
+msgstr "From"
+
+msgid "No results."
+msgstr "No results."
+
+msgid "Rows per page"
+msgstr "Rows per page"
+
+msgid "to"
+msgstr "to"

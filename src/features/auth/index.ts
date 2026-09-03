@@ -1,5 +1,5 @@
-import type { ApiResponse } from '@/shared/api/contractors';
 import { apiClient } from '@/shared/api/client';
+import type { ApiResponse } from '@/shared/api/contractors';
 
 export interface LoginInput {
   phoneNumber: string;

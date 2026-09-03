@@ -1,7 +1,7 @@
 import { queryOptions } from '@tanstack/react-query';
 
-import type { ApiResponse } from '@/shared/api/contractors';
 import { apiClient } from '@/shared/api/client';
+import type { ApiResponse } from '@/shared/api/contractors';
 
 export type Role = 'USER' | 'ADMIN';
 
