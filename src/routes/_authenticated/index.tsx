@@ -1,4 +1,4 @@
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 
 import { currentUserQueryOptions } from '@/entities/user';
@@ -7,11 +7,12 @@ import { ChatLayout } from '@/features/chat';
 
 const HomePage = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { data: user } = useSuspenseQuery(currentUserQueryOptions());
 
   const handleLogout = async () => {
     clearAuthSession();
-    router.options.context.queryClient.clear();
+    queryClient.clear();
     await router.navigate({ to: '/login', replace: true });
   };
 
