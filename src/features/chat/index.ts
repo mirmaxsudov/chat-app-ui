@@ -1,2 +1,2 @@
-export { ChatLayout } from './ui/ChatLayout';
+export { ChatPage } from './ui/ChatPage';
 export * from './api';

@@ -14,6 +14,7 @@ export const calculateMultipleUploadSummary = (
   items: readonly MultipleFileUploadItem[]
 ): MultipleFileUploadSummary => {
   const totalCount = items.length;
+  const pendingCount = items.filter((item) => item.status === 'pending').length;
   const queuedCount = items.filter((item) => item.status === 'queued').length;
   const uploadingCount = items.filter((item) =>
     ['validating', 'uploading'].includes(item.status)
@@ -33,6 +34,7 @@ export const calculateMultipleUploadSummary = (
   let status: MultipleFileUploadSummary['status'] = 'idle';
   if (totalCount > 0) {
     if (queuedCount > 0 || uploadingCount > 0) status = 'uploading';
+    else if (pendingCount > 0) status = 'pending';
     else if (pausedCount > 0) status = 'paused';
     else if (successCount === totalCount) status = 'success';
     else if (successCount > 0) status = 'partial-success';
@@ -49,6 +51,7 @@ export const calculateMultipleUploadSummary = (
     errorCount,
     estimatedSecondsRemaining: bytesPerSecond > 0 ? bytesRemaining / bytesPerSecond : null,
     pausedCount,
+    pendingCount,
     percentage: bytesTotal > 0 ? Math.min((bytesUploaded / bytesTotal) * 100, 100) : 0,
     queuedCount,
     status,

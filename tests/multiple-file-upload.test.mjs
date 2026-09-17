@@ -146,3 +146,70 @@ test('controller never uploads more files than its concurrency limit', async (t)
   assert.equal(summary.status, 'success');
   controller.dispose();
 });
+
+test('controller keeps files pending until startAll is called', async (t) => {
+  const server = await createServer({
+    configFile: false,
+    resolve: { alias: { '@': resolve('src') } },
+    server: { middlewareMode: true, ws: false },
+    appType: 'custom'
+  });
+  t.after(() => server.close());
+  const { MultipleFileUploadController } = await server.ssrLoadModule(
+    '/src/shared/hooks/use-multiple-file-upload/multiple-file-upload.controller.ts'
+  );
+
+  let starts = 0;
+  const service = {
+    async discoverCapabilities() {
+      throw new Error('Capability discovery should be disabled in this test');
+    },
+    createTask(options) {
+      return {
+        async cancel() {},
+        async dispose() {},
+        async pause() {},
+        resume() {},
+        async start() {
+          starts += 1;
+          return {
+            attachmentId: `attachment-${options.file.name}`,
+            file: options.file,
+            uploadId: options.file.name,
+            uploadUrl: `http://localhost/files/${options.file.name}`
+          };
+        }
+      };
+    }
+  };
+  const controller = new MultipleFileUploadController(
+    {
+      autoStart: false,
+      discoverServerCapabilities: false,
+      endpoint: '/files',
+      getAccessToken: () => 'token'
+    },
+    service
+  );
+  const files = [
+    { lastModified: 1, name: 'one.txt', size: 10, type: 'text/plain' },
+    { lastModified: 2, name: 'two.txt', size: 20, type: 'text/plain' }
+  ];
+
+  controller.addFiles(files);
+  await new Promise((resolveTick) => setTimeout(resolveTick, 0));
+  assert.equal(starts, 0);
+  assert.equal(controller.getSnapshot().summary.status, 'pending');
+  assert.deepEqual(
+    controller.getSnapshot().items.map((upload) => upload.status),
+    ['pending', 'pending']
+  );
+
+  const uploads = await controller.startAll();
+  assert.equal(starts, 2);
+  assert.deepEqual(
+    uploads.map((upload) => upload.attachmentId),
+    ['attachment-one.txt', 'attachment-two.txt']
+  );
+  controller.dispose();
+});

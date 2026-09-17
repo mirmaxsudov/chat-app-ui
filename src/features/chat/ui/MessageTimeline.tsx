@@ -6,6 +6,7 @@ import { cn } from '@/shared/lib/utils';
 import type { ChatMessage } from '@/features/message/model/message.types';
 import { formatMessageDate, formatMessageTime } from '../model/chat-view';
 import { RequestState } from './RequestState';
+import { MessageAttachments } from './MessageAttachments';
 
 interface MessageTimelineProps {
   messages: ChatMessage[];
@@ -80,6 +81,8 @@ export const MessageTimeline = ({
             <MessageGroup className='gap-2'>
               {messages.map((message, index) => {
                 const date = formatMessageDate(message.createdAt);
+                const attachments = message.attachments ?? [];
+                const hasAttachments = attachments.length > 0;
                 return (
                   <Fragment key={message.id}>
                     {(index === 0 || date !== formatMessageDate(messages[index - 1].createdAt)) && (
@@ -98,21 +101,33 @@ export const MessageTimeline = ({
                         >
                           <BubbleContent
                             className={cn(
-                              'rounded-2xl border-0 px-3.5 py-2 text-[0.79rem] leading-normal shadow-sm',
+                              'overflow-hidden rounded-2xl border-0 text-[0.79rem] leading-normal shadow-sm',
+                              hasAttachments ? 'p-1' : 'px-3.5 py-2',
                               message.mine
                                 ? 'rounded-br-md bg-[#d8f3c6] text-[#24332e]'
                                 : 'rounded-bl-md bg-white text-[#26343e]'
                             )}
                           >
-                            <span className='wrap-anywhere whitespace-pre-wrap'>
-                              {message.text}
-                            </span>
-                            <time
-                              dateTime={message.createdAt}
-                              className='ml-2 inline-block text-[0.6rem] text-[#73817c]'
+                            {hasAttachments && <MessageAttachments attachments={attachments} />}
+                            <span
+                              className={cn(
+                                'block',
+                                hasAttachments && 'px-2.5 pt-1.5 pb-1',
+                                !message.text && 'text-right'
+                              )}
                             >
-                              {formatMessageTime(message.createdAt)}
-                            </time>
+                              {message.text && (
+                                <span className='wrap-anywhere whitespace-pre-wrap'>
+                                  {message.text}
+                                </span>
+                              )}
+                              <time
+                                dateTime={message.createdAt}
+                                className='ml-2 inline-block text-[0.6rem] text-[#73817c]'
+                              >
+                                {formatMessageTime(message.createdAt)}
+                              </time>
+                            </span>
                           </BubbleContent>
                         </Bubble>
                       </MessageContent>

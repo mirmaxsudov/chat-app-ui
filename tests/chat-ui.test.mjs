@@ -60,12 +60,13 @@ test('chat UI loads API data, keeps failed drafts, and displays only confirmed s
   const { createRoot } = await import('react-dom/client');
   const { QueryClient, QueryClientProvider } = await import('@tanstack/react-query');
   const { apiClient } = await server.ssrLoadModule('/src/shared/api/client.ts');
-  const { ChatLayout } = await server.ssrLoadModule('/src/features/chat/ui/ChatLayout.tsx');
+  const { ChatPage } = await server.ssrLoadModule('/src/features/chat/ui/ChatPage.tsx');
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false, gcTime: 0 }, mutations: { retry: false, gcTime: 0 } }
   });
   const root = createRoot(document.getElementById('root'));
   let failSend = true;
+  let selectedChatId = null;
   const messages = [
     {
       id: 'm1',
@@ -73,7 +74,29 @@ test('chat UI loads API data, keeps failed drafts, and displays only confirmed s
       text: 'Actual API history',
       createdAt: '2026-09-03T09:00:00',
       senderId: 'peer',
-      mine: false
+      mine: false,
+      attachments: [
+        {
+          sortOrder: 1,
+          attachment: {
+            name: 'brief.pdf',
+            contentType: 'application/pdf',
+            sizeBytes: 2048,
+            publicURL: 'https://cdn.example.test/brief.pdf',
+            type: 'PDF'
+          }
+        },
+        {
+          sortOrder: 0,
+          attachment: {
+            name: 'photo.jpg',
+            contentType: 'image/jpeg',
+            sizeBytes: 4096,
+            publicURL: 'https://cdn.example.test/photo.jpg',
+            type: 'IMAGE'
+          }
+        }
+      ]
     }
   ];
   const chat = {
@@ -104,13 +127,16 @@ test('chat UI loads API data, keeps failed drafts, and displays only confirmed s
       };
     else if (config.url === '/chats/chat-id/messages' && config.method === 'post') {
       if (failSend) throw new Error('Test connection failure');
+      const payload = JSON.parse(config.data);
+      assert.deepEqual(payload.attachments, []);
       const sent = {
         id: 'm2',
         seq: 2,
         senderId: 'me',
         mine: true,
-        text: JSON.parse(config.data).text,
-        createdAt: '2026-09-03T09:01:00'
+        text: payload.text,
+        createdAt: '2026-09-03T09:01:00',
+        attachments: []
       };
       messages.push(sent);
       chat.lastMessage = sent;
@@ -133,7 +159,8 @@ test('chat UI loads API data, keeps failed drafts, and displays only confirmed s
         createElement(
           QueryClientProvider,
           { client: queryClient },
-          createElement(ChatLayout, {
+          createElement(ChatPage, {
+            activeChatId: 'chat-id',
             currentUser: {
               id: 'me',
               firstname: 'Me',
@@ -142,7 +169,11 @@ test('chat UI loads API data, keeps failed drafts, and displays only confirmed s
               phoneNumber: '',
               roles: ['USER']
             },
-            onLogout() {}
+            onBack() {},
+            onLogout() {},
+            onSelectChat(id) {
+              selectedChatId = id;
+            }
           })
         )
       )
@@ -153,6 +184,7 @@ test('chat UI loads API data, keeps failed drafts, and displays only confirmed s
       button.textContent.includes('API Peer')
     );
     await act(async () => conversation.click());
+    assert.equal(selectedChatId, 'chat-id');
     await waitFor(
       () => document.querySelector('textarea') && !document.querySelector('textarea').disabled
     );
@@ -161,6 +193,14 @@ test('chat UI loads API data, keeps failed drafts, and displays only confirmed s
         .querySelector('[aria-label="Message history"]')
         .textContent.includes('Actual API history')
     );
+    assert.equal(
+      document.querySelector('img[alt="photo.jpg"]').getAttribute('src'),
+      'https://cdn.example.test/photo.jpg'
+    );
+    assert.ok(
+      document.querySelector('[aria-label="Message history"]').textContent.includes('brief.pdf')
+    );
+    assert.ok(document.querySelector('input[aria-label="Choose attachments"][multiple]'));
 
     const textarea = document.querySelector('textarea');
     await act(async () => {

@@ -1,4 +1,4 @@
-import type { ApiResponse } from '@/shared/api/contractors';
+import type { ApiResponse } from '@/shared/api';
 
 import type { ChatMessage } from './message.types';
 

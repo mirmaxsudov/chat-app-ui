@@ -1,5 +1,17 @@
 import { z } from 'zod';
 
+const attachmentSchema = z.object({
+  sortOrder: z.number().int().nonnegative(),
+  attachment: z.object({
+    name: z.string(),
+    contentType: z.string(),
+    sizeBytes: z.number().int().nonnegative(),
+    publicURL: z.string(),
+    thumbnailURL: z.string().nullable().default(null),
+    type: z.enum(['IMAGE', 'VIDEO', 'EXCEL', 'AUDIO', 'PDF', 'PPT', 'OTHERS'])
+  })
+});
+
 const messageEventSchema = z.object({
   type: z.literal('MESSAGE_CREATED'),
   chatId: z.uuid(),
@@ -10,18 +22,24 @@ const messageEventSchema = z.object({
     senderId: z.uuid(),
     text: z.string().max(4096),
     createdAt: z.iso.datetime({ local: true }),
-    mine: z.boolean()
+    mine: z.boolean(),
+    attachments: z.array(attachmentSchema).optional()
   })
 });
 
-export type RealtimeMessageEvent = z.infer<typeof messageEventSchema>;
+type ParsedMessageEvent = z.infer<typeof messageEventSchema>;
+export type RealtimeMessageEvent = Omit<ParsedMessageEvent, 'message'> & {
+  message: Omit<ParsedMessageEvent['message'], 'attachments'> & {
+    attachments: NonNullable<ParsedMessageEvent['message']['attachments']>;
+  };
+};
 
 export const parseMessageEvent = (body: string): RealtimeMessageEvent | null => {
   // Bound parsing work and ignore unknown/malformed frames without breaking the connection.
   if (body.length > 65_536) return null;
   try {
     const result = messageEventSchema.safeParse(JSON.parse(body));
-    return result.success ? result.data : null;
+    return result.success ? (result.data as RealtimeMessageEvent) : null;
   } catch {
     return null;
   }

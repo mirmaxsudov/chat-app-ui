@@ -1,8 +1,3 @@
-export interface ChatLastMessage {
-  id: string;
-  seq: number;
-  senderId: string;
-  text: string;
-  createdAt: string;
-  mine: boolean;
-}
+import type { ChatMessage } from '@/features/message/model/message.types';
+
+export type ChatLastMessage = ChatMessage;

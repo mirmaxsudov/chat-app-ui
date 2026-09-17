@@ -32,12 +32,15 @@ export const useChatRealtime = () => {
       queryClient.clear();
       void router.navigate({ to: '/login', replace: true });
     };
+
     const checkSession = () => {
       if (!disposed && !isCurrent()) endSession();
     };
+
     const onStorage = (event: StorageEvent) => {
       if (event.key === AUTH_SESSION_KEY || event.key === null) checkSession();
     };
+
     const onResume = () => {
       checkSession();
       if (isCurrent() && !document.hidden) synchronizer.reconcile(true);
@@ -46,8 +49,10 @@ export const useChatRealtime = () => {
     window.addEventListener('storage', onStorage);
     window.addEventListener('online', onResume);
     document.addEventListener('visibilitychange', onResume);
+
     // Best-effort publishing can silently miss an event even on a healthy socket.
     // One active-only safety sweep replaces each query's former 15-second polling.
+
     const safetyTimer = setInterval(onResume, 60_000);
     void import('sockjs-client/dist/sockjs')
       .then(({ default: SockJS }) => {

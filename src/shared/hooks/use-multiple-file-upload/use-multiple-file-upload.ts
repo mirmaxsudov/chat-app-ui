@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { resolveUploadEndpoint } from '../use-file-upload';
 import { MultipleFileUploadController } from './multiple-file-upload.controller';
 import type {
@@ -20,16 +20,23 @@ export const useMultipleFileUpload = (
 
   const [controller] = useState(() => new MultipleFileUploadController(resolvedOptions));
   const [snapshot, setSnapshot] = useState(controller.getSnapshot);
+  const lifecycle = useRef({ generation: 0 });
 
   useEffect(() => {
     controller.setOptions(resolvedOptions);
   }, [controller, resolvedOptions]);
 
   useEffect(() => {
+    const marker = lifecycle.current;
+    const generation = ++marker.generation;
     const unsubscribe = controller.subscribe(() => setSnapshot(controller.getSnapshot()));
     return () => {
       unsubscribe();
-      controller.dispose();
+      // React Strict Mode immediately replays effects in development. Defer disposal so the
+      // replay can retain the same controller, while a real unmount still releases uploads.
+      queueMicrotask(() => {
+        if (marker.generation === generation) controller.dispose();
+      });
     };
   }, [controller]);
 
@@ -55,6 +62,7 @@ export const useMultipleFileUpload = (
       resumeUpload: (id: string) => controller.resumeUpload(id),
       retryFailed: () => controller.retryFailed(),
       retryUpload: (id: string) => controller.retryUpload(id),
+      startAll: () => controller.startAll(),
       waitForAll: () => controller.waitForAll()
     }),
     [addFiles, controller, snapshot]

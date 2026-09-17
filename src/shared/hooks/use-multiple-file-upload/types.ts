@@ -6,16 +6,11 @@ import type {
 } from '../use-file-upload';
 
 export type MultipleFileUploadItemStatus =
-  | 'queued'
-  | 'validating'
-  | 'uploading'
-  | 'paused'
-  | 'success'
-  | 'error'
-  | 'cancelled';
+  'pending' | 'queued' | 'validating' | 'uploading' | 'paused' | 'success' | 'error' | 'cancelled';
 
 export type MultipleFileUploadStatus =
   | 'idle'
+  | 'pending'
   | 'uploading'
   | 'paused'
   | 'success'
@@ -39,6 +34,7 @@ export interface MultipleFileUploadSummary extends FileUploadProgress {
   completedCount: number;
   errorCount: number;
   pausedCount: number;
+  pendingCount: number;
   queuedCount: number;
   status: MultipleFileUploadStatus;
   successCount: number;
@@ -51,6 +47,7 @@ export interface AddFilesOptions extends StartFileUploadOptions {
 }
 
 export interface UseMultipleFileUploadOptions {
+  autoStart?: boolean;
   autoResume?: boolean;
   chunkSize?: number;
   concurrency?: number;
@@ -77,5 +74,6 @@ export interface UseMultipleFileUploadResult extends MultipleFileUploadSummary {
   resumeUpload: (id: string) => void;
   retryFailed: () => void;
   retryUpload: (id: string) => void;
+  startAll: () => Promise<MultipleFileUploadItem[]>;
   waitForAll: () => Promise<MultipleFileUploadSummary>;
 }

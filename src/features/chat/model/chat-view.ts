@@ -38,6 +38,17 @@ export const toChatSummary = (chat: Chat) => {
   const hash = [...chat.id].reduce((total, char) => total + char.charCodeAt(0), 0);
   const timestamp = chat.lastMessage?.createdAt ?? chat.updatedAt;
   const date = new Date(timestamp);
+  const lastMessageContent = chat.lastMessage
+    ? chat.lastMessage.text ||
+      (chat.lastMessage.attachments?.some(
+        ({ attachment }) =>
+          attachment.type === 'IMAGE' || attachment.contentType.startsWith('image/')
+      )
+        ? 'Photo'
+        : chat.lastMessage.attachments?.length
+          ? 'Attachment'
+          : '')
+    : '';
   return {
     id: chat.id,
     name,
@@ -49,7 +60,7 @@ export const toChatSummary = (chat: Chat) => {
       .toUpperCase(),
     color: colors[hash % colors.length],
     message: chat.lastMessage
-      ? (chat.lastMessage.mine ? 'You: ' : '') + chat.lastMessage.text
+      ? (chat.lastMessage.mine ? 'You: ' : '') + lastMessageContent
       : 'No messages yet',
     time: Number.isNaN(date.getTime())
       ? ''

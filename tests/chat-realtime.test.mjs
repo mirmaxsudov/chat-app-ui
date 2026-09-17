@@ -117,6 +117,25 @@ test('validates UUIDs, safe sequences and local dates; ignores malformed/future 
     assert.equal(parseMessageEvent(body), null);
 });
 
+test('preserves attachment metadata from realtime message events', () => {
+  const withAttachment = event(43);
+  withAttachment.message.attachments = [
+    {
+      sortOrder: 0,
+      attachment: {
+        name: 'photo.jpg',
+        contentType: 'image/jpeg',
+        sizeBytes: 4096,
+        publicURL: 'https://cdn.example.test/photo.jpg',
+        thumbnailURL: null,
+        type: 'IMAGE'
+      }
+    }
+  ];
+
+  assert.deepEqual(parseMessageEvent(JSON.stringify(withAttachment)), withAttachment);
+});
+
 test('SockJS URL uses the API origin, supports an explicit proxy path and rejects ws://', () => {
   assert.equal(
     resolveSockJsUrl('https://api.example.com/api/v1', undefined, 'https://app.example.com'),

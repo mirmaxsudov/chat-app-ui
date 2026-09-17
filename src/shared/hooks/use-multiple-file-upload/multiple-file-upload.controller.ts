@@ -124,7 +124,7 @@ export class MultipleFileUploadController {
         runId: 0,
         slotActive: false,
         startedAt: 0,
-        status: 'queued',
+        status: this.options.autoStart === false ? 'pending' : 'queued',
         task: null,
         uploadId: null,
         uploadUrl: null
@@ -183,9 +183,19 @@ export class MultipleFileUploadController {
   resumeUpload(id: string) {
     const item = this.items.get(id);
     if (!item || item.status !== 'paused') return;
-    item.status = 'queued';
+    item.status = this.options.autoStart === false ? 'pending' : 'queued';
     this.publish();
     this.drain();
+  }
+
+  async startAll() {
+    for (const item of this.items.values()) {
+      if (item.status === 'pending') item.status = 'queued';
+    }
+    this.publish();
+    this.drain();
+    await this.waitForAll();
+    return this.snapshot.items;
   }
 
   retryUpload(id: string) {
@@ -202,7 +212,7 @@ export class MultipleFileUploadController {
     item.bytesPerSecond = 0;
     item.estimatedSecondsRemaining = null;
     item.percentage = 0;
-    item.status = 'queued';
+    item.status = this.options.autoStart === false ? 'pending' : 'queued';
     this.publish();
     this.drain();
   }
