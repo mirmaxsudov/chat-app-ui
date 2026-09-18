@@ -119,6 +119,12 @@ test('chat UI loads API data, keeps failed drafts, and displays only confirmed s
     id: 'chat-id',
     type: 'DIRECT',
     peer: { id: 'peer', firstname: 'API', lastname: 'Peer', username: 'api-peer' },
+    peerPresence: {
+      userId: 'peer',
+      status: 'ONLINE',
+      lastSeenAt: null,
+      changedAt: '2026-09-18T10:16:00Z'
+    },
     lastMessage: messages[0],
     createdAt: '2026-09-03T09:00:00',
     updatedAt: '2026-09-03T09:00:00'
@@ -195,6 +201,8 @@ test('chat UI loads API data, keeps failed drafts, and displays only confirmed s
       )
     );
     await waitFor(() => document.body.textContent.includes('API Peer'));
+    assert.ok(document.querySelector('[aria-label="Online"]'));
+    assert.ok(document.body.textContent.includes('online'));
     assert.equal(document.body.textContent.includes('Nigina'), false);
     const conversation = [...document.querySelectorAll('button')].find((button) =>
       button.textContent.includes('API Peer')

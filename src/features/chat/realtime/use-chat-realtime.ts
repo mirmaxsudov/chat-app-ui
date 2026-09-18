@@ -11,30 +11,92 @@ import {
 } from '@/features/auth';
 import { createChatSynchronizer } from './synchronizer';
 import { resolveSockJsUrl, startMessageConnection } from './connection';
+import { presenceStore } from '../presence/presence-store';
 
 export const useChatRealtime = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
 
   useEffect(() => {
-    const session = getAuthSession();
-    if (!session) return;
     let disposed = false;
     let stopConnection = () => {};
-    const isCurrent = () => !disposed && getAuthSession()?.accessToken === session.accessToken;
-    const synchronizer = createChatSynchronizer(queryClient, isCurrent);
-    const endSession = () => {
-      if (disposed) return;
-      disposed = true;
+    let synchronizer: ReturnType<typeof createChatSynchronizer> | undefined;
+    let activeToken: string | undefined;
+    let generation = 0;
+    let endingSession = false;
+    const disposeRuntime = () => {
+      generation++;
       stopConnection();
-      synchronizer.dispose();
+      stopConnection = () => {};
+      synchronizer?.dispose();
+      synchronizer = undefined;
+      activeToken = undefined;
+    };
+    const endSession = () => {
+      if (disposed || endingSession) return;
+      endingSession = true;
+      disposeRuntime();
+      presenceStore().reset();
       clearAuthSession();
       queryClient.clear();
       void router.navigate({ to: '/login', replace: true });
     };
-
+    const startRuntime = (session: NonNullable<ReturnType<typeof getAuthSession>>) => {
+      disposeRuntime();
+      activeToken = session.accessToken;
+      const runtimeGeneration = generation;
+      const isCurrent = () =>
+        !disposed &&
+        runtimeGeneration === generation &&
+        getAuthSession()?.accessToken === session.accessToken;
+      synchronizer = createChatSynchronizer(queryClient, isCurrent);
+      presenceStore().setConnectionStatus('connecting');
+      void import('sockjs-client/dist/sockjs')
+        .then(({ default: SockJS }) => {
+          if (!isCurrent() || !synchronizer) return;
+          const url = resolveSockJsUrl(
+            import.meta.env.VITE_API_BASE_URL,
+            import.meta.env.VITE_WS_URL,
+            window.location.href
+          );
+          const runtimeSynchronizer = synchronizer;
+          stopConnection = startMessageConnection({
+            getSession: getAuthSession,
+            webSocketFactory: () => new SockJS(url),
+            onMessage: runtimeSynchronizer.receive,
+            onPresence: (event) => presenceStore().receive(event),
+            onConnected: () => runtimeSynchronizer.reconcile(),
+            onConnectionStateChange: presenceStore().setConnectionStatus,
+            onInvalidSession: () => {
+              const latest = getAuthSession();
+              if (!latest) endSession();
+              else if (latest.accessToken !== activeToken) startRuntime(latest);
+              else endSession();
+            },
+            checkAuthentication: async () => {
+              try {
+                await getCurrentUser();
+                return true;
+              } catch (error) {
+                if (isAxiosError(error) && [401, 404].includes(error.response?.status ?? 0))
+                  return false;
+                throw error;
+              }
+            }
+          });
+        })
+        .catch(() => {
+          if (isCurrent()) {
+            presenceStore().setConnectionStatus('reconnecting');
+            console.warn('Realtime transport unavailable; using REST reconciliation.');
+          }
+        });
+    };
     const checkSession = () => {
-      if (!disposed && !isCurrent()) endSession();
+      if (disposed) return;
+      const latest = getAuthSession();
+      if (!latest) endSession();
+      else if (latest.accessToken !== activeToken) startRuntime(latest);
     };
 
     const onStorage = (event: StorageEvent) => {
@@ -43,7 +105,8 @@ export const useChatRealtime = () => {
 
     const onResume = () => {
       checkSession();
-      if (isCurrent() && !document.hidden) synchronizer.reconcile(true);
+      if (!disposed && getAuthSession()?.accessToken === activeToken && !document.hidden)
+        synchronizer?.reconcile(true);
     };
     window.addEventListener(AUTH_SESSION_CHANGED, checkSession);
     window.addEventListener('storage', onStorage);
@@ -54,39 +117,12 @@ export const useChatRealtime = () => {
     // One active-only safety sweep replaces each query's former 15-second polling.
 
     const safetyTimer = setInterval(onResume, 60_000);
-    void import('sockjs-client/dist/sockjs')
-      .then(({ default: SockJS }) => {
-        if (!isCurrent()) return;
-        const url = resolveSockJsUrl(
-          import.meta.env.VITE_API_BASE_URL,
-          import.meta.env.VITE_WS_URL,
-          window.location.href
-        );
-        stopConnection = startMessageConnection({
-          getSession: getAuthSession,
-          webSocketFactory: () => new SockJS(url),
-          onMessage: synchronizer.receive,
-          onConnected: () => synchronizer.reconcile(),
-          onInvalidSession: endSession,
-          checkAuthentication: async () => {
-            try {
-              await getCurrentUser();
-              return true;
-            } catch (error) {
-              if (isAxiosError(error) && [401, 404].includes(error.response?.status ?? 0))
-                return false;
-              throw error;
-            }
-          }
-        });
-      })
-      .catch(() => {
-        if (isCurrent()) console.warn('Realtime transport unavailable; using REST reconciliation.');
-      });
+    const initialSession = getAuthSession();
+    if (initialSession) startRuntime(initialSession);
     return () => {
       disposed = true;
-      stopConnection();
-      synchronizer.dispose();
+      disposeRuntime();
+      presenceStore().reset();
       clearInterval(safetyTimer);
       window.removeEventListener(AUTH_SESSION_CHANGED, checkSession);
       window.removeEventListener('storage', onStorage);

@@ -43,6 +43,12 @@ const chat = {
   id: 'chat-1',
   type: 'DIRECT',
   peer: { id: 'peer', username: 'tester', firstname: null, lastname: null },
+  peerPresence: {
+    userId: 'peer',
+    status: 'ONLINE',
+    lastSeenAt: null,
+    changedAt: '2026-09-18T10:16:00Z'
+  },
   lastMessage: null,
   createdAt: '2026-09-03T10:00:00',
   updatedAt: '2026-09-03T10:00:00'
@@ -60,14 +66,16 @@ const mockTransport = (handler) => {
 const client = () =>
   new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
 
-test('chat views use API values and never invent presence or messages', () => {
+test('chat views use API presence and never invent messages', () => {
   const summary = toChatSummary(chat);
   assert.equal(summary.name, 'tester');
   assert.equal(summary.message, 'No messages yet');
   assert.equal(summary.status, 'Direct chat');
-  assert.equal('presence' in summary, false);
+  assert.equal(summary.presence.status, 'ONLINE');
   assert.equal('unread' in summary, false);
-  assert.equal(toChatSummary({ ...chat, type: 'SAVED' }).name, 'Saved Messages');
+  const saved = toChatSummary({ ...chat, type: 'SAVED', peerPresence: null });
+  assert.equal(saved.name, 'Saved Messages');
+  assert.equal(saved.presence, null);
 });
 
 test('message history is chronological and deduplicates overlapping cursor pages', () => {

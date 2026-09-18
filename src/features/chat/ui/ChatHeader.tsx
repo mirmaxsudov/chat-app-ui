@@ -1,6 +1,8 @@
 import { ArrowLeft, Sidebar } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
+import { cn } from '@/shared/lib/utils';
 import type { ChatSummary } from '../model/chat.types';
+import { presenceLabel } from '../presence/presence-label';
 import { ChatAvatar } from './ChatAvatar';
 
 interface ChatHeaderProps {
@@ -30,8 +32,14 @@ export const ChatHeader = ({ chat, onBack, onToggleDetails }: ChatHeaderProps) =
         <span className='block truncate text-[0.86rem] font-semibold text-[#1e2b34]'>
           {chat.name}
         </span>
-        <span className='block truncate text-[0.68rem] font-medium text-[#168acd]'>
-          {chat.status}
+        <span
+          className={cn(
+            'block truncate text-[0.68rem] font-medium',
+            chat.presence?.status === 'ONLINE' ? 'text-[#15945a]' : 'text-[#6f7f89]'
+          )}
+          title={chat.presence?.lastSeenAt ?? undefined}
+        >
+          {presenceLabel(chat.presence) ?? chat.status}
         </span>
       </span>
     </button>

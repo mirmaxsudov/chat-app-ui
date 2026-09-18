@@ -3,10 +3,12 @@ import type { CurrentUser } from '@/entities/user';
 import { cn } from '@/shared/lib/utils';
 import type { ChatSummary } from '../model/chat.types';
 import { ConversationList } from './ConversationList';
+import type { RealtimeConnectionStatus } from '../presence/presence-store';
 
 interface ChatLayoutViewProps {
   activeChatId: string | null;
   chats: ChatSummary[];
+  connectionStatus: RealtimeConnectionStatus;
   conversation?: ReactNode;
   currentUser: CurrentUser;
   error?: string;
@@ -23,6 +25,7 @@ interface ChatLayoutViewProps {
 export const ChatLayoutView = ({
   activeChatId,
   chats,
+  connectionStatus,
   conversation,
   currentUser,
   error,
@@ -36,6 +39,15 @@ export const ChatLayoutView = ({
   retry
 }: ChatLayoutViewProps) => (
   <main className='h-svh overflow-hidden bg-[#d9e2e8] p-0 text-[#23313a]'>
+    {connectionStatus === 'reconnecting' && (
+      <div
+        role='status'
+        aria-live='polite'
+        className='fixed top-3 left-1/2 z-50 -translate-x-1/2 rounded-full border border-[#c6d5de] bg-white/95 px-3 py-1.5 text-xs font-medium text-[#536772] shadow-[0_8px_24px_rgba(36,57,70,0.18)] backdrop-blur'
+      >
+        Reconnecting…
+      </div>
+    )}
     <div className='relative mx-auto grid h-full max-w-[1660px] overflow-hidden bg-white shadow-[0_16px_60px_rgba(36,57,70,0.16)] md:grid-cols-[340px_minmax(0,1fr)] lg:border lg:border-white/60 xl:grid-cols-[360px_minmax(0,1fr)]'>
       <div className={cn('relative min-h-0', activeChatId ? 'hidden md:block' : 'block')}>
         <ConversationList

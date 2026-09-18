@@ -4,6 +4,7 @@ import { Separator } from '@/shared/ui/separator';
 import type { ChatSummary } from '../model/chat.types';
 import { formatMessageDate } from '../model/chat-view';
 import { ChatAvatar } from './ChatAvatar';
+import { presenceLabel } from '../presence/presence-label';
 
 export const ChatDetails = ({ chat, onClose }: { chat: ChatSummary; onClose: () => void }) => (
   <aside
@@ -25,7 +26,9 @@ export const ChatDetails = ({ chat, onClose }: { chat: ChatSummary; onClose: () 
     <div className='flex flex-col items-center px-6 py-7 text-center'>
       <ChatAvatar chat={chat} className='size-20' />
       <h3 className='mt-4 text-base font-semibold text-[#202e37]'>{chat.name}</h3>
-      <p className='mt-1 text-xs font-medium text-[#168acd]'>{chat.status}</p>
+      <p className='mt-1 text-xs font-medium text-[#168acd]'>
+        {presenceLabel(chat.presence) ?? chat.status}
+      </p>
     </div>
     <Separator className='bg-[#edf1f3]' />
     <dl className='space-y-5 p-5 text-sm'>
