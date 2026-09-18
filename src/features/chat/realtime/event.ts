@@ -27,12 +27,21 @@ const messageEventSchema = z.object({
   })
 });
 
+const presenceEventSchema = z.object({
+  type: z.literal('PRESENCE_CHANGED'),
+  userId: z.uuid(),
+  status: z.enum(['ONLINE', 'OFFLINE']),
+  lastSeenAt: z.iso.datetime({ offset: true }).nullable(),
+  changedAt: z.iso.datetime({ offset: true })
+});
+
 type ParsedMessageEvent = z.infer<typeof messageEventSchema>;
 export type RealtimeMessageEvent = Omit<ParsedMessageEvent, 'message'> & {
   message: Omit<ParsedMessageEvent['message'], 'attachments'> & {
     attachments: NonNullable<ParsedMessageEvent['message']['attachments']>;
   };
 };
+export type RealtimePresenceEvent = z.infer<typeof presenceEventSchema>;
 
 export const parseMessageEvent = (body: string): RealtimeMessageEvent | null => {
   // Bound parsing work and ignore unknown/malformed frames without breaking the connection.
@@ -40,6 +49,16 @@ export const parseMessageEvent = (body: string): RealtimeMessageEvent | null => 
   try {
     const result = messageEventSchema.safeParse(JSON.parse(body));
     return result.success ? (result.data as RealtimeMessageEvent) : null;
+  } catch {
+    return null;
+  }
+};
+
+export const parsePresenceEvent = (body: string): RealtimePresenceEvent | null => {
+  if (body.length > 65_536) return null;
+  try {
+    const result = presenceEventSchema.safeParse(JSON.parse(body));
+    return result.success ? result.data : null;
   } catch {
     return null;
   }

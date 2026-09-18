@@ -1,7 +1,8 @@
 import { Client, ReconnectionTimeMode, type StompConfig } from '@stomp/stompjs';
 import type { AuthSession } from '@/features/auth/session';
-import type { RealtimeMessageEvent } from './event';
-import { parseMessageEvent } from './event';
+import type { RealtimeMessageEvent, RealtimePresenceEvent } from './event';
+import { parseMessageEvent, parsePresenceEvent } from './event';
+import type { RealtimeConnectionStatus } from '../presence/presence-store';
 
 export const resolveSockJsUrl = (
   apiUrl: string | undefined,
@@ -20,13 +21,15 @@ interface ConnectionOptions {
   getSession: () => AuthSession | null;
   webSocketFactory: NonNullable<StompConfig['webSocketFactory']>;
   onMessage: (event: RealtimeMessageEvent) => void;
+  onPresence: (event: RealtimePresenceEvent) => void;
   onConnected: () => void;
+  onConnectionStateChange: (status: RealtimeConnectionStatus) => void;
   onInvalidSession: () => void;
   checkAuthentication: () => Promise<boolean>;
   createClient?: (config: StompConfig) => Client;
 }
 
-/** STOMP owns reconnect/backoff; one private subscription is installed per connection. */
+/** STOMP owns reconnect/backoff; private message and presence subscriptions share one client. */
 export const startMessageConnection = (options: ConnectionOptions) => {
   const session = options.getSession();
   if (!session) {
@@ -36,6 +39,7 @@ export const startMessageConnection = (options: ConnectionOptions) => {
   let stopped = false;
   let expiryTimer: ReturnType<typeof setTimeout> | undefined;
   let checkingAuthentication = false;
+  options.onConnectionStateChange('connecting');
   const validSession = () => {
     const latest = options.getSession();
     return latest?.accessToken === session.accessToken && Date.parse(latest.expiresAt) > Date.now();
@@ -79,6 +83,19 @@ export const startMessageConnection = (options: ConnectionOptions) => {
         },
         { ack: 'auto' }
       );
+      client.subscribe(
+        '/user/queue/presence',
+        (frame) => {
+          if (stopped || !validSession()) {
+            invalidate();
+            return;
+          }
+          const event = parsePresenceEvent(frame.body);
+          if (event) options.onPresence(event);
+        },
+        { ack: 'auto' }
+      );
+      options.onConnectionStateChange('connected');
       options.onConnected();
     },
     // Protocol errors have no stable auth DTO. Verify via REST instead of logging
@@ -103,13 +120,19 @@ export const startMessageConnection = (options: ConnectionOptions) => {
             checkingAuthentication = false;
           });
       }
+      options.onConnectionStateChange('reconnecting');
       client.forceDisconnect();
     },
     onWebSocketError: () => {
-      if (!stopped) client.forceDisconnect();
+      if (!stopped) {
+        options.onConnectionStateChange('reconnecting');
+        client.forceDisconnect();
+      }
     },
     onWebSocketClose: () => {
-      if (!stopped && !validSession()) invalidate();
+      if (stopped) return;
+      if (!validSession()) invalidate();
+      else options.onConnectionStateChange('reconnecting');
     }
   });
   const stop = () => {

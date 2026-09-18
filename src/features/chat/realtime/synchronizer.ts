@@ -6,6 +6,7 @@ import type { ChatsResponse } from '../model/chat.response.types';
 import { chatByIdQueryOptions, chatQueryKeys } from '@/features/chat';
 import { applyMessagesToCache, applyMessageToCache } from '../model/chat-cache';
 import type { RealtimeMessageEvent } from './event';
+import { presenceStore } from '../presence/presence-store';
 
 type History = InfiniteData<ApiMessagesResponse>;
 
@@ -40,6 +41,24 @@ export const createChatSynchronizer = (client: QueryClient, isCurrent: () => boo
       queryKey: chatId ? ['messages', 'chat', chatId, 'infinite'] : ['messages'],
       predicate: (query) => query.queryKey[3] === 'infinite'
     });
+
+  const receivePresenceFromQuery = (data: unknown) => {
+    if (!data) return;
+    if (Array.isArray((data as InfiniteData<ChatsResponse>).pages)) {
+      presenceStore().receiveChats(
+        (data as InfiniteData<ChatsResponse>).pages.flatMap((page) => page.results)
+      );
+      return;
+    }
+    if (Array.isArray((data as ChatsResponse).results)) {
+      presenceStore().receiveChats((data as ChatsResponse).results);
+      return;
+    }
+    if ((data as Chat).peer) presenceStore().receiveChats([data as Chat]);
+  };
+
+  for (const query of client.getQueryCache().findAll({ queryKey: chatQueryKeys.all }))
+    receivePresenceFromQuery(query.state.data);
 
   const latest = (chatId: string) => {
     const sequences = histories(chatId)
@@ -216,6 +235,7 @@ export const createChatSynchronizer = (client: QueryClient, isCurrent: () => boo
       (event.query.queryKey[0] !== 'messages' && event.query.queryKey[0] !== 'chats')
     )
       return;
+    if (event.query.queryKey[0] === 'chats') receivePresenceFromQuery(event.query.state.data);
     if (event.query.queryKey[0] === 'chats') {
       // An initial list snapshot may have started before an unknown-chat event.
       // Metadata and list requests may finish in either order.
@@ -252,6 +272,10 @@ export const createChatSynchronizer = (client: QueryClient, isCurrent: () => boo
     reconcile(activeOnly = false) {
       if (!current()) return;
       refreshLists();
+      void client.invalidateQueries(
+        { queryKey: chatQueryKeys.details(), refetchType: 'active' },
+        { cancelRefetch: false }
+      );
       const ids = new Set(
         histories()
           .filter((query) => query.state.data && (!activeOnly || query.isActive()))

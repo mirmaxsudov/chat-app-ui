@@ -6,8 +6,10 @@ import { chatByIdQueryOptions } from '../api';
 import { applyMessageToCache } from './chat-cache';
 import { chronologicalMessages, toChatSummary } from './chat-view';
 import { requestErrorMessage } from './request-error';
+import { usePresenceStore } from '../presence/presence-store';
 
 export const useChatConversation = (chatId: string) => {
+  const presenceByUserId = usePresenceStore((state) => state.byUserId);
   const queryClient = useQueryClient();
   const chat = useQuery({ ...chatByIdQueryOptions(chatId), meta: { withoutToastOnError: true } });
   const historyOptions = chatMessagesInfiniteQueryOptions({ chatId });
@@ -37,7 +39,9 @@ export const useChatConversation = (chatId: string) => {
   });
 
   return {
-    chat: chat.data ? toChatSummary(chat.data) : undefined,
+    chat: chat.data
+      ? toChatSummary(chat.data, presenceByUserId[chat.data.peer.id] ?? chat.data.peerPresence)
+      : undefined,
     chatError: chat.isError
       ? requestErrorMessage(chat.error, 'Unable to load this chat.')
       : undefined,

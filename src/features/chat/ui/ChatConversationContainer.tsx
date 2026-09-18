@@ -8,6 +8,5 @@ interface ChatConversationContainerProps {
 
 export const ChatConversationContainer = ({ chatId, onBack }: ChatConversationContainerProps) => {
   const conversation = useChatConversation(chatId);
-
   return <ChatConversationView {...conversation} onBack={onBack} />;
 };

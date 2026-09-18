@@ -7,6 +7,8 @@ import type { ChatMessage } from '@/features/message/model/message.types';
 import { formatMessageDate, formatMessageTime } from '../model/chat-view';
 import { RequestState } from './RequestState';
 import { MessageAttachments } from './MessageAttachments';
+import Linkify from 'linkify-react';
+import { LINKIFY_OPTIONS } from '@/shared/constants';
 
 interface MessageTimelineProps {
   messages: ChatMessage[];
@@ -116,9 +118,9 @@ export const MessageTimeline = ({
                                 !message.text && 'text-right'
                               )}
                             >
-                              {message.text && (
+                              {!!message.text && (
                                 <span className='wrap-anywhere whitespace-pre-wrap'>
-                                  {message.text}
+                                  <Linkify options={LINKIFY_OPTIONS}>{message.text}</Linkify>
                                 </span>
                               )}
                               <time

@@ -1,4 +1,4 @@
-import type { Chat } from './chat.types';
+import type { Chat, UserPresence } from './chat.types';
 import type { ChatMessage } from '../../message/model/message.types';
 import type { ApiMessagesResponse } from '../../message/model/message.response.types';
 
@@ -22,7 +22,7 @@ export const formatMessageDate = (value: string) => {
       });
 };
 
-export const toChatSummary = (chat: Chat) => {
+export const toChatSummary = (chat: Chat, presence: UserPresence | null = chat.peerPresence) => {
   const peerName = [chat.peer?.firstname, chat.peer?.lastname].filter(Boolean).join(' ').trim();
   const name =
     chat.type === 'SAVED'
@@ -73,6 +73,7 @@ export const toChatSummary = (chat: Chat) => {
       GROUP: 'Group chat',
       CHANNEL: 'Channel'
     }[chat.type],
+    presence: chat.type === 'DIRECT' ? presence : null,
     username: chat.peer?.username ?? null,
     createdAt: chat.createdAt
   };

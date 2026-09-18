@@ -3,8 +3,10 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { chatsInfiniteQueryOptions } from '../api';
 import { toChatSummary } from './chat-view';
 import { requestErrorMessage } from './request-error';
+import { usePresenceStore } from '../presence/presence-store';
 
 export const useConversationList = () => {
+  const presenceByUserId = usePresenceStore((state) => state.byUserId);
   const query = useInfiniteQuery({
     ...chatsInfiniteQueryOptions(),
     meta: { withoutToastOnError: true }
@@ -16,8 +18,8 @@ export const useConversationList = () => {
         ...new Map(
           (query.data?.pages.flatMap((page) => page.results) ?? []).map((chat) => [chat.id, chat])
         ).values()
-      ].map(toChatSummary),
-    [query.data]
+      ].map((chat) => toChatSummary(chat, presenceByUserId[chat.peer.id] ?? chat.peerPresence)),
+    [presenceByUserId, query.data]
   );
 
   return {

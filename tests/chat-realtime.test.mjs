@@ -16,7 +16,7 @@ const server = await createServer({
 after(() => server.close());
 
 const load = (path) => server.ssrLoadModule('/src/' + path);
-const { parseMessageEvent } = await load('features/chat/realtime/event.ts');
+const { parseMessageEvent, parsePresenceEvent } = await load('features/chat/realtime/event.ts');
 const { startMessageConnection, resolveSockJsUrl } = await load(
   'features/chat/realtime/connection.ts'
 );
@@ -31,6 +31,7 @@ const { chatsInfiniteQueryOptions, chatByIdQueryOptions } = await load(
   'features/chat/api/query-options.ts'
 );
 const { apiClient } = await load('shared/api/client.ts');
+const { applyPresence, usePresenceStore } = await load('features/chat/presence/presence-store.ts');
 const chatId = '11111111-1111-4111-8111-111111111111';
 const peerId = '33333333-3333-4333-8333-333333333333';
 const message = (seq) => ({
@@ -47,10 +48,23 @@ const event = (seq, id = chatId) => ({
   chatType: 'DIRECT',
   message: message(seq)
 });
+const presence = (status, changedAt, lastSeenAt = null) => ({
+  type: 'PRESENCE_CHANGED',
+  userId: peerId,
+  status,
+  lastSeenAt,
+  changedAt
+});
 const chat = (id = chatId, seq = 1) => ({
   id,
   type: 'DIRECT',
   peer: { id: peerId, username: 'peer', firstname: null, lastname: null },
+  peerPresence: {
+    userId: peerId,
+    status: 'OFFLINE',
+    lastSeenAt: '2026-09-03T09:00:00Z',
+    changedAt: '2026-09-03T09:00:00Z'
+  },
   lastMessage: message(seq),
   createdAt: '2026-09-03T10:00:00',
   updatedAt: '2026-09-03T10:00:00'
@@ -134,6 +148,24 @@ test('preserves attachment metadata from realtime message events', () => {
   ];
 
   assert.deepEqual(parseMessageEvent(JSON.stringify(withAttachment)), withAttachment);
+});
+
+test('validates presence events and orders normalized state by changedAt', () => {
+  const online = presence('ONLINE', '2026-09-18T10:16:00Z');
+  assert.deepEqual(parsePresenceEvent(JSON.stringify(online)), online);
+  assert.equal(parsePresenceEvent(JSON.stringify({ ...online, status: 'AWAY' })), null);
+  assert.equal(parsePresenceEvent(JSON.stringify({ ...online, userId: 'invalid' })), null);
+
+  const current = applyPresence({}, online);
+  assert.equal(
+    applyPresence(current, presence('OFFLINE', '2026-09-18T10:15:00Z', '2026-09-18T10:15:00Z')),
+    current
+  );
+  assert.equal(applyPresence(current, { ...online, status: 'OFFLINE', changedAt: null }), current);
+  assert.equal(
+    applyPresence(current, presence('OFFLINE', '2026-09-18T10:17:00Z'))[peerId].status,
+    'OFFLINE'
+  );
 });
 
 test('SockJS URL uses the API origin, supports an explicit proxy path and rejects ws://', () => {
@@ -368,6 +400,8 @@ const fakeConnection = (overrides = {}) => {
   let invalidations = 0;
   let connected = 0;
   const received = [];
+  const receivedPresence = [];
+  const states = [];
   const subscriptions = [];
   let session = {
     accessToken: 'test-only',
@@ -400,6 +434,8 @@ const fakeConnection = (overrides = {}) => {
     onInvalidSession: () => invalidations++,
     onConnected: () => connected++,
     onMessage: (message) => received.push(message),
+    onPresence: (event) => receivedPresence.push(event),
+    onConnectionStateChange: (state) => states.push(state),
     checkAuthentication: async () => true,
     ...overrides
   });
@@ -409,6 +445,8 @@ const fakeConnection = (overrides = {}) => {
     stop,
     subscriptions,
     received,
+    receivedPresence,
+    states,
     session,
     invalidate: () => {
       session = null;
@@ -417,7 +455,7 @@ const fakeConnection = (overrides = {}) => {
   };
 };
 
-test('CONNECT uses a bearer header; each reconnect subscribes once to the sole private destination', () => {
+test('CONNECT subscribes to messages and presence before reconciliation on every connection', () => {
   const connection = fakeConnection();
   try {
     assert.deepEqual(connection.fake.connectHeaders, { Authorization: 'Bearer test-only' });
@@ -426,20 +464,52 @@ test('CONNECT uses a bearer header; each reconnect subscribes once to the sole p
     assert.equal(connection.config.maxReconnectDelay, 30000);
     connection.config.onConnect();
     connection.config.onConnect(); // Simulate a subsequent transport connection.
-    assert.equal(connection.subscriptions.length, 2);
+    assert.equal(connection.subscriptions.length, 4);
+    assert.deepEqual(
+      connection.subscriptions.map((subscription) => subscription.destination),
+      [
+        '/user/queue/messages',
+        '/user/queue/presence',
+        '/user/queue/messages',
+        '/user/queue/presence'
+      ]
+    );
     for (const subscription of connection.subscriptions) {
-      assert.equal(subscription.destination, '/user/queue/messages');
       assert.deepEqual(subscription.headers, { ack: 'auto' });
     }
-    connection.subscriptions[1].callback({ body: JSON.stringify(event(1)) });
-    connection.subscriptions[1].callback({ body: '{' });
+    connection.subscriptions[2].callback({ body: JSON.stringify(event(1)) });
+    connection.subscriptions[2].callback({ body: '{' });
+    connection.subscriptions[3].callback({
+      body: JSON.stringify(presence('ONLINE', '2026-09-18T10:16:00Z'))
+    });
     assert.equal(connection.received.length, 1);
+    assert.equal(connection.receivedPresence.length, 1);
+    assert.equal(connection.states.at(-1), 'connected');
     connection.stop();
-    connection.subscriptions[1].callback({ body: JSON.stringify(event(2)) });
+    connection.subscriptions[2].callback({ body: JSON.stringify(event(2)) });
     assert.equal(connection.received.length, 1);
     assert.equal(connection.fake.deactivated, true);
   } finally {
     connection.stop();
+  }
+});
+
+test('REST presence snapshots cannot overwrite a newer queue event', async () => {
+  const queryClient = client();
+  usePresenceStore.getState().reset();
+  const sync = createChatSynchronizer(queryClient, () => true);
+  try {
+    usePresenceStore.getState().receive(presence('ONLINE', '2026-09-18T10:16:00Z'));
+    queryClient.setQueryData(chatsInfiniteQueryOptions().queryKey, {
+      pages: [list([chat()])],
+      pageParams: [0]
+    });
+    await delay(0);
+    assert.equal(usePresenceStore.getState().byUserId[peerId].status, 'ONLINE');
+  } finally {
+    sync.dispose();
+    usePresenceStore.getState().reset();
+    queryClient.clear();
   }
 });
 

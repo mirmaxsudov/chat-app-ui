@@ -4,6 +4,7 @@ import { useConversationList } from '../model/use-conversation-list';
 import { ChatConversationContainer } from './ChatConversationContainer';
 import { ChatLayoutView } from './ChatLayoutView';
 import { NewChatDialog } from './NewChatDialog';
+import { usePresenceStore } from '../presence/presence-store';
 
 interface ChatPageProps {
   activeChatId: string | null;
@@ -21,12 +22,14 @@ export const ChatPage = ({
   onSelectChat
 }: ChatPageProps) => {
   const [creatingChat, setCreatingChat] = useState(false);
+  const connectionStatus = usePresenceStore((state) => state.connectionStatus);
   const conversationList = useConversationList();
 
   return (
     <>
       <ChatLayoutView
         {...conversationList}
+        connectionStatus={connectionStatus}
         activeChatId={activeChatId}
         currentUser={currentUser}
         onLogout={onLogout}
