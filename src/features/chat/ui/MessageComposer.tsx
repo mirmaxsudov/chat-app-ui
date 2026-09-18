@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { type FormEvent, useRef, useState } from 'react';
 import { FileArchive, FileImage, LoaderCircle, Paperclip, RotateCcw, Send, X } from 'lucide-react';
 import { getAuthSession } from '@/features/auth/session';
-import { useMultipleFileUpload } from '@/shared/hooks/use-multiple-file-upload';
 import type { MultipleFileUploadItem } from '@/shared/hooks/use-multiple-file-upload';
+import { useMultipleFileUpload } from '@/shared/hooks/use-multiple-file-upload';
 import { Button } from '@/shared/ui/button';
 import { InputGroup, InputGroupTextarea } from '@/shared/ui/input-group';
 import { cn } from '@/shared/lib/utils';
@@ -66,12 +66,7 @@ const UploadPreview = ({
   const [previewUrl] = useState(() =>
     item.file.type.startsWith('image/') ? URL.createObjectURL(item.file) : null
   );
-  useEffect(
-    () => () => {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
-    },
-    [previewUrl]
-  );
+
   const busy = ['queued', 'validating', 'uploading'].includes(item.status);
   const problem = item.status === 'error' || (item.status === 'success' && !item.attachmentId);
 
@@ -83,7 +78,7 @@ const UploadPreview = ({
       )}
     >
       {previewUrl ? (
-        <img src={previewUrl} alt='' className='size-full object-cover' />
+        <img src={previewUrl} alt={item.file.name} className='size-full object-cover' />
       ) : (
         <div className='flex size-full flex-col items-center justify-center gap-1.5 px-2 text-[#4f6660]'>
           <FileArchive className='size-7' />
@@ -92,13 +87,11 @@ const UploadPreview = ({
           </span>
         </div>
       )}
-
       {busy && (
         <div className='absolute inset-0 grid place-items-center bg-[#243c37]/25'>
           <CircularProgress value={item.percentage} />
         </div>
       )}
-
       {problem && (
         <button
           type='button'
@@ -111,7 +104,6 @@ const UploadPreview = ({
           Retry
         </button>
       )}
-
       <Button
         type='button'
         size='icon-xs'
@@ -123,7 +115,6 @@ const UploadPreview = ({
       >
         <X className='size-3.5' />
       </Button>
-
       <div className='absolute inset-x-0 bottom-0 bg-linear-to-t from-black/70 to-transparent px-2 pt-5 pb-1.5 text-white'>
         <p className='truncate text-[0.62rem] font-semibold'>{item.file.name}</p>
         <p className='truncate text-[0.55rem] text-white/80'>{uploadStateLabel(item)}</p>

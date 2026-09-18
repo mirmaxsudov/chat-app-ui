@@ -2,6 +2,28 @@ import { replaceEqualDeep, type InfiniteData } from '@tanstack/react-query';
 import type { ChatMessage } from './message.types';
 import type { ApiMessagesResponse } from './message.response.types';
 
+/** Prefer newly generated attachment metadata without letting a stale echo clear it again. */
+export const mergeConfirmedMessage = (
+  previous: ChatMessage,
+  incoming: ChatMessage
+): ChatMessage => {
+  if (previous.id !== incoming.id) return incoming;
+  const attachments = incoming.attachments ?? previous.attachments;
+  if (!attachments) return replaceEqualDeep(previous, incoming);
+  const previousAttachments = new Map(
+    (previous.attachments ?? []).map((item) => [item.sortOrder, item.attachment])
+  );
+  return replaceEqualDeep(previous, {
+    ...incoming,
+    attachments: attachments.map((item) => {
+      const existing = previousAttachments.get(item.sortOrder);
+      return !item.attachment.thumbnailURL && existing?.thumbnailURL
+        ? { ...item, attachment: { ...item.attachment, thumbnailURL: existing.thumbnailURL } }
+        : item;
+    })
+  });
+};
+
 // Merge only server-confirmed messages. Preserve cursors so older history remains pageable.
 export const insertConfirmedMessage = <TPageParam = unknown>(
   history: InfiniteData<ApiMessagesResponse, TPageParam> | undefined,
@@ -15,25 +37,26 @@ export const insertConfirmedMessages = <TPageParam = unknown>(
   incoming: ChatMessage[]
 ): InfiniteData<ApiMessagesResponse, TPageParam> | undefined => {
   if (!history || !history.pages.length) return history;
-  // Persisted messages are immutable. An echoed REST result must be a no-op.
-  const ids = new Set(history.pages.flatMap((page) => page.messages.map((message) => message.id)));
-  const added = incoming.filter((message) => {
-    if (ids.has(message.id)) return false;
-    ids.add(message.id);
-    return true;
-  });
-  if (!added.length) return history;
-  return {
+  // A message can be delivered again after asynchronous attachment processing. Upsert it so
+  // generated thumbnail metadata reaches the UI; replaceEqualDeep keeps identical echoes a no-op.
+  const existingIds = new Set(
+    history.pages.flatMap((page) => page.messages.map((message) => message.id))
+  );
+  const byId = new Map(incoming.map((message) => [message.id, message]));
+  const added = [...byId.values()].filter((message) => !existingIds.has(message.id));
+  return replaceEqualDeep(history, {
     ...history,
-    pages: history.pages.map((page, index) =>
-      index === 0
-        ? {
-            ...page,
-            messages: [...added, ...page.messages].sort((a, b) => b.seq - a.seq)
-          }
-        : page
-    )
-  };
+    pages: history.pages.map((page, index) => ({
+      ...page,
+      messages: [
+        ...(index === 0 ? added : []),
+        ...page.messages.map((message) => {
+          const updated = byId.get(message.id);
+          return updated ? mergeConfirmedMessage(message, updated) : message;
+        })
+      ].sort((a, b) => b.seq - a.seq)
+    }))
+  });
 };
 
 /** Keep loaded history and live arrivals when an older HTTP snapshot finishes later.

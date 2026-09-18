@@ -51,6 +51,7 @@
     "react": "^19.2.8",
     "react-day-picker": "^10.0.1",
     "react-dom": "^19.2.8",
+    "react-medium-image-zoom": "^5.4.9",
     "react-phone-number-input": "^3.4.18",
     "react-resizable-panels": "^4.12.3",
     "recharts": "3.8.0",

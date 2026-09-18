@@ -61,6 +61,9 @@ test('chat UI loads API data, keeps failed drafts, and displays only confirmed s
   const { QueryClient, QueryClientProvider } = await import('@tanstack/react-query');
   const { apiClient } = await server.ssrLoadModule('/src/shared/api/client.ts');
   const { ChatPage } = await server.ssrLoadModule('/src/features/chat/ui/ChatPage.tsx');
+  const { applyMessageToCache } = await server.ssrLoadModule(
+    '/src/features/chat/model/chat-cache.ts'
+  );
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false, gcTime: 0 }, mutations: { retry: false, gcTime: 0 } }
   });
@@ -77,12 +80,13 @@ test('chat UI loads API data, keeps failed drafts, and displays only confirmed s
       mine: false,
       attachments: [
         {
-          sortOrder: 1,
+          sortOrder: 2,
           attachment: {
             name: 'brief.pdf',
             contentType: 'application/pdf',
             sizeBytes: 2048,
             publicURL: 'https://cdn.example.test/brief.pdf',
+            thumbnailURL: null,
             type: 'PDF'
           }
         },
@@ -93,7 +97,19 @@ test('chat UI loads API data, keeps failed drafts, and displays only confirmed s
             contentType: 'image/jpeg',
             sizeBytes: 4096,
             publicURL: 'https://cdn.example.test/photo.jpg',
+            thumbnailURL: null,
             type: 'IMAGE'
+          }
+        },
+        {
+          sortOrder: 1,
+          attachment: {
+            name: 'large-video.mp4',
+            contentType: 'video/mp4',
+            sizeBytes: 50_000_000,
+            publicURL: 'https://cdn.example.test/large-video.mp4',
+            thumbnailURL: null,
+            type: 'VIDEO'
           }
         }
       ]
@@ -193,9 +209,64 @@ test('chat UI loads API data, keeps failed drafts, and displays only confirmed s
         .querySelector('[aria-label="Message history"]')
         .textContent.includes('Actual API history')
     );
+    const photo = document.querySelector('img[alt="photo.jpg"]');
+    assert.equal(photo.getAttribute('src'), 'https://cdn.example.test/photo.jpg');
+    assert.ok(photo.classList.contains('object-contain'));
+    await act(async () => photo.dispatchEvent(new dom.window.Event('load')));
     assert.equal(
-      document.querySelector('img[alt="photo.jpg"]').getAttribute('src'),
-      'https://cdn.example.test/photo.jpg'
+      document
+        .querySelector('[aria-label="Message history"]')
+        .textContent.includes('Image unavailable'),
+      false
+    );
+    const pendingVideo = document.querySelector(
+      '[aria-label="Play video large-video.mp4"] [data-slot="media-thumbnail"]'
+    );
+    assert.equal(pendingVideo.dataset.state, 'pending');
+    assert.ok(pendingVideo.querySelector('.bg-black'));
+    assert.equal(document.querySelector('img[alt="large-video.mp4"]'), null);
+
+    const processedMessage = {
+      ...messages[0],
+      attachments: messages[0].attachments.map((item) =>
+        item.attachment.type === 'VIDEO'
+          ? {
+              ...item,
+              attachment: {
+                ...item.attachment,
+                thumbnailURL: 'https://cdn.example.test/large-video-thumbnail.jpg'
+              }
+            }
+          : item
+      )
+    };
+    await act(async () => applyMessageToCache(queryClient, 'chat-id', processedMessage));
+    await waitFor(() => document.querySelector('img[alt="large-video.mp4"]'));
+    assert.equal(
+      document.querySelector('img[alt="large-video.mp4"]').getAttribute('src'),
+      'https://cdn.example.test/large-video-thumbnail.jpg'
+    );
+    await act(async () => photo.dispatchEvent(new dom.window.Event('error')));
+    assert.ok(
+      document
+        .querySelector('[aria-label="Message history"]')
+        .textContent.includes('Image unavailable')
+    );
+    assert.equal(pendingVideo.dataset.state, 'available');
+    await act(async () => applyMessageToCache(queryClient, 'chat-id', messages[0]));
+    assert.equal(
+      document.querySelector('img[alt="large-video.mp4"]').getAttribute('src'),
+      'https://cdn.example.test/large-video-thumbnail.jpg'
+    );
+    await act(async () =>
+      document.querySelector('[aria-label="Play video large-video.mp4"]').click()
+    );
+    await waitFor(() => document.querySelector('video[aria-label="large-video.mp4"]'));
+    const video = document.querySelector('video[aria-label="large-video.mp4"]');
+    assert.equal(video.getAttribute('src'), 'https://cdn.example.test/large-video.mp4');
+    assert.equal(
+      video.getAttribute('poster'),
+      'https://cdn.example.test/large-video-thumbnail.jpg'
     );
     assert.ok(
       document.querySelector('[aria-label="Message history"]').textContent.includes('brief.pdf')
