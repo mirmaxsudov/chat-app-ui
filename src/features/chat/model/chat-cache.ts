@@ -1,14 +1,22 @@
 import { replaceEqualDeep, type InfiniteData, type QueryClient } from '@tanstack/react-query';
 import type { ChatMessage } from '@/features/message/model/message.types';
 import type { ApiMessagesResponse } from '@/features/message/model/message.response.types';
-import { insertConfirmedMessages } from '@/features/message/model/message-cache';
+import {
+  insertConfirmedMessages,
+  mergeConfirmedMessage
+} from '@/features/message/model/message-cache';
 import type { Chat } from './chat.types';
 import type { ChatsResponse } from './chat.response.types';
 
-export const withLastMessage = (chat: Chat, message: ChatMessage): Chat =>
-  chat.lastMessage && chat.lastMessage.seq >= message.seq
-    ? chat
-    : { ...chat, lastMessage: message, updatedAt: message.createdAt };
+export const withLastMessage = (chat: Chat, message: ChatMessage): Chat => {
+  if (chat.lastMessage && chat.lastMessage.seq > message.seq) return chat;
+  if (chat.lastMessage?.seq === message.seq)
+    return replaceEqualDeep(chat, {
+      ...chat,
+      lastMessage: mergeConfirmedMessage(chat.lastMessage, message)
+    });
+  return replaceEqualDeep(chat, { ...chat, lastMessage: message, updatedAt: message.createdAt });
+};
 
 export const mergeChat = (previous: unknown, incoming: unknown): Chat => {
   const old = previous as Chat | undefined;
@@ -87,15 +95,18 @@ export const applyMessagesToCache = (
       queryKey: ['messages', 'chat', chatId, 'history'],
       predicate: (query) => !(query.queryKey[4] as { beforeSeq?: number }).beforeSeq
     },
-    (old) =>
-      !old || messages.every((message) => old.messages.some((item) => item.id === message.id))
-        ? old
-        : {
-            ...old,
-            messages: [
-              ...new Map([...old.messages, ...messages].map((item) => [item.id, item])).values()
-            ].sort((a, b) => b.seq - a.seq)
-          }
+    (old) => {
+      if (!old) return old;
+      const byId = new Map(old.messages.map((item) => [item.id, item]));
+      for (const message of messages) {
+        const existing = byId.get(message.id);
+        byId.set(message.id, existing ? mergeConfirmedMessage(existing, message) : message);
+      }
+      return replaceEqualDeep(old, {
+        ...old,
+        messages: [...byId.values()].sort((a, b) => b.seq - a.seq)
+      });
+    }
   );
   for (const query of client.getQueryCache().findAll({ queryKey: ['chats', 'list'] })) {
     if (query.queryKey[2] === 'infinite') {
