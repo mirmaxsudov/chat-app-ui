@@ -62,6 +62,10 @@ export const useChatConversation = (chatId: string) => {
     retryMessages: () => {
       void (history.isFetchNextPageError ? history.fetchNextPage() : history.refetch());
     },
+    refreshPendingPreviews: async () => {
+      if (history.isFetching) return;
+      await history.refetch({ cancelRefetch: false });
+    },
     sendError: send.isError
       ? requestErrorMessage(send.error, 'Message was not sent. Please try again.')
       : undefined,

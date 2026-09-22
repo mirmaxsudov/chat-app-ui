@@ -38,7 +38,7 @@ export const VideoDialog = ({
         poster={poster ?? undefined}
         controls
         playsInline
-        preload='metadata'
+        preload='none'
         aria-label={title}
         className='max-h-[82vh] min-h-48 w-auto max-w-full bg-black object-contain sm:min-w-xl'
       >

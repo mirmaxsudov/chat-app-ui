@@ -22,7 +22,8 @@ test('chat UI loads API data, keeps failed drafts, and displays only confirmed s
     'MutationObserver',
     'getComputedStyle',
     'requestAnimationFrame',
-    'cancelAnimationFrame'
+    'cancelAnimationFrame',
+    'Image'
   ];
   const saved = new Map(keys.map((key) => [key, Object.getOwnPropertyDescriptor(globalThis, key)]));
   for (const key of keys)
@@ -32,6 +33,24 @@ test('chat UI loads API data, keeps failed drafts, and displays only confirmed s
       writable: true
     });
   globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+  const preloadedImages = [];
+  globalThis.Image = class {
+    decoding = 'auto';
+    onerror = null;
+    onload = null;
+
+    constructor() {
+      preloadedImages.push(this);
+    }
+
+    decode() {
+      return Promise.resolve();
+    }
+
+    set src(value) {
+      this.currentSrc = value;
+    }
+  };
   const ResizeObserverStub = class {
     observe() {}
     unobserve() {}
@@ -87,7 +106,8 @@ test('chat UI loads API data, keeps failed drafts, and displays only confirmed s
             sizeBytes: 2048,
             publicURL: 'https://cdn.example.test/brief.pdf',
             thumbnailURL: null,
-            type: 'PDF'
+            type: 'PDF',
+            preview: null
           }
         },
         {
@@ -98,7 +118,15 @@ test('chat UI loads API data, keeps failed drafts, and displays only confirmed s
             sizeBytes: 4096,
             publicURL: 'https://cdn.example.test/photo.jpg',
             thumbnailURL: null,
-            type: 'IMAGE'
+            type: 'IMAGE',
+            preview: {
+              status: 'READY',
+              url: 'https://cdn.example.test/photo-preview.jpg',
+              contentType: 'image/jpeg',
+              sizeBytes: 512,
+              width: 640,
+              height: 427
+            }
           }
         },
         {
@@ -109,7 +137,15 @@ test('chat UI loads API data, keeps failed drafts, and displays only confirmed s
             sizeBytes: 50_000_000,
             publicURL: 'https://cdn.example.test/large-video.mp4',
             thumbnailURL: null,
-            type: 'VIDEO'
+            type: 'VIDEO',
+            preview: {
+              status: 'PENDING',
+              url: null,
+              contentType: null,
+              sizeBytes: null,
+              width: null,
+              height: null
+            }
           }
         }
       ]
@@ -218,8 +254,20 @@ test('chat UI loads API data, keeps failed drafts, and displays only confirmed s
         .textContent.includes('Actual API history')
     );
     const photo = document.querySelector('img[alt="photo.jpg"]');
-    assert.equal(photo.getAttribute('src'), 'https://cdn.example.test/photo.jpg');
-    assert.ok(photo.classList.contains('object-contain'));
+    assert.equal(photo.getAttribute('src'), 'https://cdn.example.test/photo-preview.jpg');
+    assert.ok(photo.classList.contains('object-cover'));
+    assert.equal(photo.closest('figure').style.aspectRatio, '640 / 427');
+    assert.equal(preloadedImages.length, 1);
+    assert.equal(preloadedImages[0].currentSrc, 'https://cdn.example.test/photo.jpg');
+    await act(async () => {
+      preloadedImages[0].onload();
+      await Promise.resolve();
+    });
+    await waitFor(
+      () =>
+        document.querySelector('img[alt="photo.jpg"]')?.getAttribute('src') ===
+        'https://cdn.example.test/photo.jpg'
+    );
     await act(async () => photo.dispatchEvent(new dom.window.Event('load')));
     assert.equal(
       document
@@ -242,7 +290,14 @@ test('chat UI loads API data, keeps failed drafts, and displays only confirmed s
               ...item,
               attachment: {
                 ...item.attachment,
-                thumbnailURL: 'https://cdn.example.test/large-video-thumbnail.jpg'
+                preview: {
+                  status: 'READY',
+                  url: 'https://cdn.example.test/large-video-preview.jpg',
+                  contentType: 'image/jpeg',
+                  sizeBytes: 1024,
+                  width: 640,
+                  height: 360
+                }
               }
             }
           : item
@@ -252,19 +307,21 @@ test('chat UI loads API data, keeps failed drafts, and displays only confirmed s
     await waitFor(() => document.querySelector('img[alt="large-video.mp4"]'));
     assert.equal(
       document.querySelector('img[alt="large-video.mp4"]').getAttribute('src'),
-      'https://cdn.example.test/large-video-thumbnail.jpg'
+      'https://cdn.example.test/large-video-preview.jpg'
     );
-    await act(async () => photo.dispatchEvent(new dom.window.Event('error')));
-    assert.ok(
-      document
-        .querySelector('[aria-label="Message history"]')
-        .textContent.includes('Image unavailable')
+    await act(async () =>
+      document.querySelector('img[alt="photo.jpg"]').dispatchEvent(new dom.window.Event('error'))
+    );
+    await waitFor(
+      () =>
+        document.querySelector('img[alt="photo.jpg"]')?.getAttribute('src') ===
+        'https://cdn.example.test/photo-preview.jpg'
     );
     assert.equal(pendingVideo.dataset.state, 'available');
     await act(async () => applyMessageToCache(queryClient, 'chat-id', messages[0]));
     assert.equal(
       document.querySelector('img[alt="large-video.mp4"]').getAttribute('src'),
-      'https://cdn.example.test/large-video-thumbnail.jpg'
+      'https://cdn.example.test/large-video-preview.jpg'
     );
     await act(async () =>
       document.querySelector('[aria-label="Play video large-video.mp4"]').click()
@@ -272,10 +329,8 @@ test('chat UI loads API data, keeps failed drafts, and displays only confirmed s
     await waitFor(() => document.querySelector('video[aria-label="large-video.mp4"]'));
     const video = document.querySelector('video[aria-label="large-video.mp4"]');
     assert.equal(video.getAttribute('src'), 'https://cdn.example.test/large-video.mp4');
-    assert.equal(
-      video.getAttribute('poster'),
-      'https://cdn.example.test/large-video-thumbnail.jpg'
-    );
+    assert.equal(video.getAttribute('poster'), 'https://cdn.example.test/large-video-preview.jpg');
+    assert.equal(video.getAttribute('preload'), 'none');
     assert.ok(
       document.querySelector('[aria-label="Message history"]').textContent.includes('brief.pdf')
     );

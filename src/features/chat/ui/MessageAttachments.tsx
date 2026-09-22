@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   FileArchive,
   FileAudio,
@@ -12,6 +12,8 @@ import { MediaThumbnail } from '@/shared/ui/media-thumbnail';
 import { VideoDialog } from '@/shared/ui/video-dialog';
 import type { ChatMessageAttachment } from '@/features/message/model/message.types';
 import { ImageZoom } from '@/shared/ui/image-zoom.tsx';
+import { ProgressiveAttachmentImage } from '@/features/message/media';
+import { observeNearViewport } from '@/features/message/media/viewport-observer';
 
 const formatFileSize = (bytes: number) => {
   if (!Number.isFinite(bytes) || bytes < 1) return '0 B';
@@ -28,6 +30,12 @@ const isVideo = ({ attachment }: ChatMessageAttachment) =>
   attachment.type === 'VIDEO' || attachment.contentType.startsWith('video/');
 
 const isVisualMedia = (item: ChatMessageAttachment) => isImage(item) || isVideo(item);
+
+const readyPreviewUrl = ({ attachment }: ChatMessageAttachment) =>
+  attachment.preview?.status === 'READY' ? attachment.preview.url : null;
+
+const isPendingPreview = ({ attachment }: ChatMessageAttachment) =>
+  attachment.preview?.status === 'PENDING' || attachment.preview?.status === 'PROCESSING';
 
 const FileIcon = ({ type }: { type: ChatMessageAttachment['attachment']['type'] }) => {
   if (type === 'AUDIO') return <FileAudio className='size-5' />;
@@ -89,32 +97,72 @@ const MediaPreview = ({
   );
 };
 
-const MessageImage = ({ item }: { item: ChatMessageAttachment }) => {
+interface MediaItemProps {
+  item: ChatMessageAttachment;
+  pendingKey: string;
+  onPendingVisibilityChange?: (key: string, visible: boolean) => void;
+}
+
+const MessageImage = ({ item, pendingKey, onPendingVisibilityChange }: MediaItemProps) => {
   const { attachment } = item;
+  const previewUrl = readyPreviewUrl(item);
 
   return (
     <ImageZoom
       className='group/media relative block min-h-28 overflow-hidden rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-[#168acd]'
       aria-label={`Open image ${attachment.name}`}
+      zoomImg={{ src: attachment.publicURL, alt: attachment.name }}
     >
-      <MediaPreview item={item} source={attachment.publicURL} />
+      <ProgressiveAttachmentImage
+        alt={attachment.name}
+        originalUrl={attachment.publicURL}
+        previewUrl={previewUrl}
+        previewStatus={attachment.preview?.status}
+        previewWidth={attachment.preview?.width}
+        previewHeight={attachment.preview?.height}
+        pendingKey={pendingKey}
+        onPendingVisibilityChange={onPendingVisibilityChange}
+        className='max-h-80 transition-transform duration-300 group-hover/media:scale-[1.015]'
+        fallback={
+          <span className='absolute inset-0 flex min-h-28 items-center justify-center gap-2 bg-[#bfd0cc] px-4 text-xs font-medium text-[#40544f]'>
+            <FileIcon type={attachment.type} />
+            Image unavailable
+          </span>
+        }
+      />
     </ImageZoom>
   );
 };
 
-const MessageVideo = ({ item }: { item: ChatMessageAttachment }) => {
+const MessageVideo = ({ item, pendingKey, onPendingVisibilityChange }: MediaItemProps) => {
   const [open, setOpen] = useState(false);
+  const [container, setContainer] = useState<HTMLButtonElement | null>(null);
+  const [isNearViewport, setIsNearViewport] = useState(false);
   const { attachment } = item;
+  const previewUrl = readyPreviewUrl(item);
+  const pending = isPendingPreview(item);
+
+  useEffect(() => {
+    if (!container) return;
+    return observeNearViewport(container, setIsNearViewport);
+  }, [container]);
+
+  useEffect(() => {
+    if (!onPendingVisibilityChange) return;
+    onPendingVisibilityChange(pendingKey, pending && isNearViewport);
+    return () => onPendingVisibilityChange(pendingKey, false);
+  }, [isNearViewport, onPendingVisibilityChange, pending, pendingKey]);
 
   return (
     <>
       <button
+        ref={setContainer}
         type='button'
         onClick={() => setOpen(true)}
         className='group/media relative block min-h-28 overflow-hidden rounded-xl bg-black text-left outline-none focus-visible:ring-2 focus-visible:ring-[#168acd]'
         aria-label={`Play video ${attachment.name}`}
       >
-        <MediaPreview item={item} source={attachment.thumbnailURL} video />
+        <MediaPreview item={item} source={previewUrl} video />
       </button>
       {open && (
         <VideoDialog
@@ -124,7 +172,7 @@ const MessageVideo = ({ item }: { item: ChatMessageAttachment }) => {
           open
           onOpenChange={setOpen}
           source={attachment.publicURL}
-          poster={attachment.thumbnailURL}
+          poster={previewUrl}
           title={attachment.name}
         />
       )}
@@ -155,7 +203,17 @@ const MessageFile = ({ item }: { item: ChatMessageAttachment }) => {
   );
 };
 
-export const MessageAttachments = ({ attachments }: { attachments: ChatMessageAttachment[] }) => {
+interface MessageAttachmentsProps {
+  attachments: ChatMessageAttachment[];
+  messageId: string;
+  onPendingVisibilityChange?: (key: string, visible: boolean) => void;
+}
+
+export const MessageAttachments = ({
+  attachments,
+  messageId,
+  onPendingVisibilityChange
+}: MessageAttachmentsProps) => {
   const ordered = [...attachments].sort((left, right) => left.sortOrder - right.sortOrder);
   const groups = ordered.reduce<Array<{ media: boolean; items: ChatMessageAttachment[] }>>(
     (result, item) => {
@@ -183,7 +241,12 @@ export const MessageAttachments = ({ attachments }: { attachments: ChatMessageAt
             {group.items.map((item) => {
               const Component = isVideo(item) ? MessageVideo : MessageImage;
               return (
-                <Component key={`${item.sortOrder}-${item.attachment.publicURL}`} item={item} />
+                <Component
+                  key={`${item.sortOrder}-${item.attachment.publicURL}`}
+                  item={item}
+                  pendingKey={`${messageId}:${item.sortOrder}`}
+                  onPendingVisibilityChange={onPendingVisibilityChange}
+                />
               );
             })}
           </div>

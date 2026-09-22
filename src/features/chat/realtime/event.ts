@@ -1,5 +1,18 @@
 import { z } from 'zod';
 
+const previewStatusSchema = z.enum(['NOT_APPLICABLE', 'PENDING', 'PROCESSING', 'READY', 'FAILED']);
+
+const attachmentPreviewSchema = z
+  .object({
+    status: previewStatusSchema,
+    url: z.string().nullable(),
+    contentType: z.enum(['image/jpeg', 'image/png']).nullable(),
+    sizeBytes: z.number().int().nonnegative().nullable(),
+    width: z.number().int().positive().nullable(),
+    height: z.number().int().positive().nullable()
+  })
+  .nullable();
+
 const attachmentSchema = z.object({
   sortOrder: z.number().int().nonnegative(),
   attachment: z.object({
@@ -8,7 +21,8 @@ const attachmentSchema = z.object({
     sizeBytes: z.number().int().nonnegative(),
     publicURL: z.string(),
     thumbnailURL: z.string().nullable().default(null),
-    type: z.enum(['IMAGE', 'VIDEO', 'EXCEL', 'AUDIO', 'PDF', 'PPT', 'OTHERS'])
+    type: z.enum(['IMAGE', 'VIDEO', 'EXCEL', 'AUDIO', 'PDF', 'PPT', 'OTHERS']),
+    preview: attachmentPreviewSchema.default(null)
   })
 });
 

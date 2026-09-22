@@ -1,4 +1,4 @@
-import { Fragment, useLayoutEffect, useRef } from 'react';
+import { Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Bubble, BubbleContent } from '@/shared/ui/bubble';
 import { Button } from '@/shared/ui/button';
 import { Message, MessageContent, MessageGroup } from '@/shared/ui/message';
@@ -18,6 +18,7 @@ interface MessageTimelineProps {
   hasMore: boolean;
   loadingMore: boolean;
   onLoadMore: () => void;
+  onRefreshPendingPreviews: () => Promise<unknown>;
 }
 
 export const MessageTimeline = ({
@@ -27,10 +28,62 @@ export const MessageTimeline = ({
   onRetry,
   hasMore,
   loadingMore,
-  onLoadMore
+  onLoadMore,
+  onRefreshPendingPreviews
 }: MessageTimelineProps) => {
   const viewport = useRef<HTMLDivElement>(null);
   const previous = useRef<{ first?: string; last?: string; height: number }>({ height: 0 });
+  const refreshPendingPreviews = useRef(onRefreshPendingPreviews);
+  const [visiblePendingPreviews, setVisiblePendingPreviews] = useState<ReadonlySet<string>>(
+    () => new Set()
+  );
+
+  useEffect(() => {
+    refreshPendingPreviews.current = onRefreshPendingPreviews;
+  }, [onRefreshPendingPreviews]);
+
+  const handlePendingVisibilityChange = useCallback((key: string, visible: boolean) => {
+    setVisiblePendingPreviews((current) => {
+      if (current.has(key) === visible) return current;
+      const next = new Set(current);
+      if (visible) next.add(key);
+      else next.delete(key);
+      return next;
+    });
+  }, []);
+
+  const hasVisiblePendingPreviews = visiblePendingPreviews.size > 0;
+  useEffect(() => {
+    if (!hasVisiblePendingPreviews) return;
+    let cancelled = false;
+    let elapsed = 0;
+    let attempt = 0;
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    const delays = [1_000, 2_000, 5_000] as const;
+
+    const schedule = () => {
+      const delay = delays[Math.min(attempt, delays.length - 1)];
+      if (elapsed + delay > 30_000) return;
+      timeout = setTimeout(() => {
+        elapsed += delay;
+        attempt += 1;
+        void refreshPendingPreviews.current().then(
+          () => {
+            if (!cancelled) schedule();
+          },
+          () => {
+            if (!cancelled) schedule();
+          }
+        );
+      }, delay);
+    };
+
+    schedule();
+    return () => {
+      cancelled = true;
+      if (timeout) clearTimeout(timeout);
+    };
+  }, [hasVisiblePendingPreviews]);
 
   useLayoutEffect(() => {
     const element = viewport.current;
@@ -110,7 +163,13 @@ export const MessageTimeline = ({
                                 : 'rounded-bl-md bg-white text-[#26343e]'
                             )}
                           >
-                            {hasAttachments && <MessageAttachments attachments={attachments} />}
+                            {hasAttachments && (
+                              <MessageAttachments
+                                attachments={attachments}
+                                messageId={message.id}
+                                onPendingVisibilityChange={handlePendingVisibilityChange}
+                              />
+                            )}
                             <span
                               className={cn(
                                 'block',
