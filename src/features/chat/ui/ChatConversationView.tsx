@@ -21,6 +21,7 @@ interface ChatConversationProps {
   onBack: () => void;
   retryChat: () => void;
   retryMessages: () => void;
+  refreshPendingPreviews: () => Promise<unknown>;
   sendError?: string;
   sending: boolean;
   sendMessage: (text: string, attachments: string[]) => Promise<boolean>;
@@ -39,6 +40,7 @@ export const ChatConversationView = ({
   onBack,
   retryChat,
   retryMessages,
+  refreshPendingPreviews,
   sendError,
   sending,
   sendMessage
@@ -76,6 +78,7 @@ export const ChatConversationView = ({
           hasMore={hasMoreMessages}
           loadingMore={loadingMoreMessages}
           onLoadMore={loadMoreMessages}
+          onRefreshPendingPreviews={refreshPendingPreviews}
         />
         <MessageComposer
           isSending={sending}

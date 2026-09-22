@@ -142,7 +142,15 @@ test('preserves attachment metadata from realtime message events', () => {
         sizeBytes: 4096,
         publicURL: 'https://cdn.example.test/photo.jpg',
         thumbnailURL: null,
-        type: 'IMAGE'
+        type: 'IMAGE',
+        preview: {
+          status: 'READY',
+          url: 'https://cdn.example.test/photo-preview.jpg',
+          contentType: 'image/jpeg',
+          sizeBytes: 1024,
+          width: 640,
+          height: 427
+        }
       }
     }
   ];

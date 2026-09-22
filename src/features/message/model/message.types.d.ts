@@ -1,3 +1,4 @@
+export type PreviewStatus = 'NOT_APPLICABLE' | 'PENDING' | 'PROCESSING' | 'READY' | 'FAILED';
 export type AttachmentType = 'IMAGE' | 'VIDEO' | 'EXCEL' | 'AUDIO' | 'PDF' | 'PPT' | 'OTHERS';
 
 export interface ChatMessage {
@@ -19,5 +20,15 @@ export interface ChatMessageAttachment {
     publicURL: string;
     thumbnailURL: string | null;
     type: AttachmentType;
+    preview: AttachmentPreview | null;
   };
+}
+
+export interface AttachmentPreview {
+  status: PreviewStatus;
+  url: string | null;
+  contentType: 'image/jpeg' | 'image/png' | null;
+  sizeBytes: number | null;
+  width: number | null;
+  height: number | null;
 }

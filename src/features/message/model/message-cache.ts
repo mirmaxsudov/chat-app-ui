@@ -13,13 +13,38 @@ export const mergeConfirmedMessage = (
   const previousAttachments = new Map(
     (previous.attachments ?? []).map((item) => [item.sortOrder, item.attachment])
   );
+
+  const previewProgress = {
+    NOT_APPLICABLE: 0,
+    PENDING: 1,
+    PROCESSING: 2,
+    FAILED: 3,
+    READY: 4
+  } as const;
+
   return replaceEqualDeep(previous, {
     ...incoming,
     attachments: attachments.map((item) => {
       const existing = previousAttachments.get(item.sortOrder);
-      return !item.attachment.thumbnailURL && existing?.thumbnailURL
-        ? { ...item, attachment: { ...item.attachment, thumbnailURL: existing.thumbnailURL } }
-        : item;
+      if (!existing) return item;
+
+      const existingPreview = existing.preview;
+      const incomingPreview = item.attachment.preview;
+      const preview =
+        existingPreview &&
+        (!incomingPreview ||
+          previewProgress[existingPreview.status] > previewProgress[incomingPreview.status])
+          ? existingPreview
+          : incomingPreview;
+
+      return {
+        ...item,
+        attachment: {
+          ...item.attachment,
+          thumbnailURL: item.attachment.thumbnailURL ?? existing.thumbnailURL,
+          preview
+        }
+      };
     })
   });
 };

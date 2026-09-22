@@ -6,7 +6,6 @@ import {
   ContextMenuItem,
   ContextMenuTrigger
 } from '@/shared/ui/context-menu';
-import { useLingui } from '@lingui/react/macro';
 
 const copyToClipboard = async (value: string) => {
   if (navigator.clipboard?.writeText) {
@@ -28,8 +27,6 @@ const copyToClipboard = async (value: string) => {
 };
 
 export const LinkWithContextMenu = ({ attributes, content }: IntermediateRepresentation) => {
-  const { t } = useLingui();
-
   const href = String(attributes.href);
 
   const handleCopy = async () => {
@@ -51,7 +48,7 @@ export const LinkWithContextMenu = ({ attributes, content }: IntermediateReprese
       <ContextMenuContent className='min-w-36' sideOffset={4}>
         <ContextMenuItem onClick={() => void handleCopy()}>
           <CopyIcon aria-hidden='true' />
-          {t`Copy link`}
+          Copy link
         </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>

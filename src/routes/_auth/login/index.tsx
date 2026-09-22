@@ -110,7 +110,7 @@ const LoginPage = () => {
               value={phoneNumber}
               aria-invalid={Boolean(fieldErrors.phoneNumber)}
               aria-describedby={fieldErrors.phoneNumber ? 'phoneNumber-error' : undefined}
-              className='h-13 rounded-xl border-[#c7d0ca] bg-white/65 pr-4 pl-11 text-base shadow-none placeholder:text-[#9ba69f] focus-visible:border-[#2c7662] focus-visible:ring-[#2c7662]/20 md:text-sm'
+              className='h-13 rounded-xl border-[#c7d0ca] bg-white/65 pr-4 pl-11 text-base shadow-none placeholder:text-[#9ba69f] focus-visible:ring-[#2c7662]/20 md:text-sm'
               onChange={(event) => {
                 setPhoneNumber(event.target.value);
                 setFieldErrors((current) => ({ ...current, phoneNumber: undefined }));
