@@ -1,5 +1,6 @@
-import { FileUploadError } from './file-upload.errors';
 import type { FileUploadProgress, TusCapabilities } from './types';
+
+import { FileUploadError } from './file-upload.errors';
 
 export const TUS_VERSION = '1.0.0';
 export const DEFAULT_CHUNK_SIZE = 10 * 1024 * 1024; // 10 MB

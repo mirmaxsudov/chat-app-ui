@@ -1,4 +1,5 @@
 import { queryOptions } from '@tanstack/react-query';
+
 import { getCurrentUser } from '@/utils/api';
 
 export const currentUserQueryKey = ['current-user'] as const;

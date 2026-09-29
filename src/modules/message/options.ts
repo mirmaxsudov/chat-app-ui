@@ -1,6 +1,9 @@
 import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
-import { getChatMessages, type GetChatMessagesRequest } from '@/utils/api';
+
+import type {GetChatMessagesRequest} from '@/utils/api';
+
 import { mergeLatestMessages, mergeMessageHistory } from '@/modules/message/helpers';
+import { getChatMessages  } from '@/utils/api';
 
 export const MESSAGE_QUERY_OPTIONS = {
   all: ['messages'] as const,

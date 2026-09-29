@@ -57,7 +57,7 @@ export const FormPriceInput = ({
   };
 
   return (
-    <FormBase isRequired={isRequired} label={label} description={description}>
+    <FormBase description={description} isRequired={isRequired} label={label}>
       <InputGroup>
         <InputGroupAddon>
           <InputGroupText>{currency}</InputGroupText>
@@ -67,10 +67,11 @@ export const FormPriceInput = ({
           {...inputProps}
           aria-invalid={isInvalid}
           id={field.name}
+          inputMode='decimal'
           name={field.name}
+          placeholder={placeholder}
           type='text'
           value={displayValue}
-          inputMode='decimal'
           onBlur={() => {
             const cleaned = cleanValue(rawValue);
             field.handleChange(cleaned);
@@ -80,7 +81,6 @@ export const FormPriceInput = ({
             const cleaned = cleanValue(e.target.value);
             field.handleChange(cleaned);
           }}
-          placeholder={placeholder}
         />
       </InputGroup>
     </FormBase>

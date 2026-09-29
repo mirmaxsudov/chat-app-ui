@@ -1,19 +1,19 @@
-import * as React from 'react';
+import type {VariantProps} from 'class-variance-authority';
+
 import { mergeProps } from '@base-ui/react/merge-props';
 import { useRender } from '@base-ui/react/use-render';
-import { cva, type VariantProps } from 'class-variance-authority';
+import { cva  } from 'class-variance-authority';
+import * as React from 'react';
 
 import { cn } from '@/shared/lib/utils.ts';
 
-function BubbleGroup({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
+const BubbleGroup = ({ className, ...props }: React.ComponentProps<'div'>) => (
     <div
-      data-slot='bubble-group'
       className={cn('flex min-w-0 flex-col gap-2', className)}
+      data-slot='bubble-group'
       {...props}
     />
-  );
-}
+  )
 
 const bubbleVariants = cva(
   'group/bubble relative flex w-fit max-w-[80%] min-w-0 flex-col gap-1 group-data-[align=end]/message:self-end data-[align=end]:self-end data-[variant=ghost]:max-w-full',
@@ -42,25 +42,23 @@ const bubbleVariants = cva(
   }
 );
 
-function Bubble({
+const Bubble = ({
   variant = 'default',
   align = 'start',
   className,
   ...props
 }: React.ComponentProps<'div'> &
   VariantProps<typeof bubbleVariants> & {
-    align?: 'start' | 'end';
-  }) {
-  return (
+    align?: 'end' | 'start';
+  }) => (
     <div
+      className={cn(bubbleVariants({ variant }), className)}
+      data-align={align}
       data-slot='bubble'
       data-variant={variant}
-      data-align={align}
-      className={cn(bubbleVariants({ variant }), className)}
       {...props}
     />
-  );
-}
+  )
 
 function BubbleContent({ className, render, ...props }: useRender.ComponentProps<'div'>) {
   return useRender({
@@ -101,24 +99,22 @@ const bubbleReactionsVariants = cva(
   }
 );
 
-function BubbleReactions({
+const BubbleReactions = ({
   side = 'bottom',
   align = 'end',
   className,
   ...props
 }: React.ComponentProps<'div'> & {
-  align?: 'start' | 'end';
-  side?: 'top' | 'bottom';
-}) {
-  return (
+  align?: 'end' | 'start';
+  side?: 'bottom' | 'top';
+}) => (
     <div
-      data-slot='bubble-reactions'
+      className={cn(bubbleReactionsVariants({ side, align }), className)}
       data-align={align}
       data-side={side}
-      className={cn(bubbleReactionsVariants({ side, align }), className)}
+      data-slot='bubble-reactions'
       {...props}
     />
-  );
-}
+  )
 
-export { BubbleGroup, Bubble, BubbleContent, BubbleReactions };
+export { Bubble, BubbleContent, BubbleGroup, BubbleReactions };

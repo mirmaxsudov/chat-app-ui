@@ -1,4 +1,5 @@
 import { useRouter } from '@tanstack/react-router';
+
 import { ChatPage } from '@/modules/chat';
 
 export const ChatRoutePage = ({ chatId = null }: { chatId?: string | null }) => {

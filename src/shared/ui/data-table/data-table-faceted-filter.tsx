@@ -74,7 +74,7 @@ export const DataTableFacetedFilter = <TData, TValue>({
   const selectedSize = selectedValues?.size;
 
   return (
-    <Popover onOpenChange={setOpen} open={open}>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         render={
           <Button className='border-dashed' size='sm' variant='outline'>
@@ -82,9 +82,9 @@ export const DataTableFacetedFilter = <TData, TValue>({
               <div
                 aria-label={`Clear ${title} filter`}
                 className='focus-visible:ring-ring rounded-sm opacity-70 transition-opacity hover:opacity-100 focus-visible:ring-1 focus-visible:outline-none'
+                role='button'
                 tabIndex={0}
                 onClick={onReset}
-                role='button'
               >
                 <XCircle />
               </div>

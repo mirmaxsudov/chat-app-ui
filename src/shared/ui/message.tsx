@@ -2,84 +2,72 @@ import * as React from 'react';
 
 import { cn } from '@/shared/lib/utils.ts';
 
-function MessageGroup({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
+const MessageGroup = ({ className, ...props }: React.ComponentProps<'div'>) => (
     <div
-      data-slot='message-group'
       className={cn('flex min-w-0 flex-col gap-1.5', className)}
+      data-slot='message-group'
       {...props}
     />
-  );
-}
+  )
 
-function Message({
+const Message = ({
   className,
   align = 'start',
   ...props
-}: React.ComponentProps<'div'> & { align?: 'start' | 'end' }) {
-  return (
+}: React.ComponentProps<'div'> & { align?: 'end' | 'start' }) => (
     <div
-      data-slot='message'
-      data-align={align}
       className={cn(
         'group/message relative flex w-full min-w-0 gap-1.5 text-xs/relaxed data-[align=end]:flex-row-reverse',
         className
       )}
+      data-align={align}
+      data-slot='message'
       {...props}
     />
-  );
-}
+  )
 
-function MessageAvatar({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
+const MessageAvatar = ({ className, ...props }: React.ComponentProps<'div'>) => (
     <div
-      data-slot='message-avatar'
       className={cn(
         'bg-muted flex w-fit min-w-8 shrink-0 items-center justify-center self-end overflow-hidden rounded-full group-has-data-[slot=message-footer]/message:-translate-y-8',
         className
       )}
+      data-slot='message-avatar'
       {...props}
     />
-  );
-}
+  )
 
-function MessageContent({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
+const MessageContent = ({ className, ...props }: React.ComponentProps<'div'>) => (
     <div
-      data-slot='message-content'
       className={cn(
         'flex w-full min-w-0 flex-col gap-2 wrap-break-word group-data-[align=end]/message:*:data-slot:self-end',
         className
       )}
+      data-slot='message-content'
       {...props}
     />
-  );
-}
+  )
 
-function MessageHeader({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
+const MessageHeader = ({ className, ...props }: React.ComponentProps<'div'>) => (
     <div
-      data-slot='message-header'
       className={cn(
         'text-muted-foreground flex max-w-full min-w-0 items-center px-2.5 text-[0.625rem] font-medium group-has-data-[variant=ghost]/message:px-0',
         className
       )}
+      data-slot='message-header'
       {...props}
     />
-  );
-}
+  )
 
-function MessageFooter({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
+const MessageFooter = ({ className, ...props }: React.ComponentProps<'div'>) => (
     <div
-      data-slot='message-footer'
       className={cn(
         'text-muted-foreground flex max-w-full min-w-0 items-center px-2.5 text-[0.625rem] font-medium group-has-data-[variant=ghost]/message:px-0 group-data-[align=end]/message:justify-end',
         className
       )}
+      data-slot='message-footer'
       {...props}
     />
-  );
-}
+  )
 
-export { MessageGroup, Message, MessageAvatar, MessageContent, MessageFooter, MessageHeader };
+export { Message, MessageAvatar, MessageContent, MessageFooter, MessageGroup, MessageHeader };

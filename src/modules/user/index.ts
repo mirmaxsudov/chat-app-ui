@@ -1,2 +1,2 @@
-export * from './options';
 export * from './components';
+export * from './options';

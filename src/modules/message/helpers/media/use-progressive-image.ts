@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
+
 import { preloadOriginalImage } from './image-load-queue';
 import { observeNearViewport } from './viewport-observer';
 
 export type ProgressiveImagePhase =
-  'placeholder' | 'preview' | 'loading-original' | 'original' | 'error';
+  'error' | 'loading-original' | 'original' | 'placeholder' | 'preview';
 
 interface UseProgressiveImageOptions {
-  previewUrl: string | null;
-  originalUrl: string;
   deferOriginal?: boolean;
+  originalUrl: string;
+  previewUrl: string | null;
   rootMargin?: string;
 }
 

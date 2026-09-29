@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react';
-import { cn } from '@/shared/lib/utils';
-import { ConversationList } from '@/modules/chat';
+
 import type { RealtimeConnectionStatus } from '@/modules/presence';
+
+import { ConversationList } from '@/modules/chat';
+import { cn } from '@/shared/lib/utils.ts';
 
 interface ChatLayoutViewProps {
   activeChatId: string | null;
@@ -35,9 +37,9 @@ export const ChatLayoutView = ({
   <main className='h-svh overflow-hidden bg-[#d9e2e8] p-0 text-[#23313a]'>
     {connectionStatus === 'reconnecting' && (
       <div
-        role='status'
         aria-live='polite'
         className='fixed top-3 left-1/2 z-50 -translate-x-1/2 rounded-full border border-[#c6d5de] bg-white/95 px-3 py-1.5 text-xs font-medium text-[#536772] shadow-[0_8px_24px_rgba(36,57,70,0.18)] backdrop-blur'
+        role='status'
       >
         Reconnecting…
       </div>
@@ -45,16 +47,16 @@ export const ChatLayoutView = ({
     <div className='relative mx-auto grid h-full max-w-[1660px] overflow-hidden bg-white shadow-[0_16px_60px_rgba(36,57,70,0.16)] md:grid-cols-[340px_minmax(0,1fr)] lg:border lg:border-white/60 xl:grid-cols-[360px_minmax(0,1fr)]'>
       <div className={cn('relative min-h-0', activeChatId ? 'hidden md:block' : 'block')}>
         <ConversationList
-          chats={chats}
           activeChatId={activeChatId}
-          onSelect={(chat) => onSelectChat(chat.id)}
-          onNewChat={onNewChat}
-          loading={loading}
+          chats={chats}
           error={error}
-          onRetry={retry}
           hasMore={hasMore}
+          loading={loading}
           loadingMore={loadingMore}
           onLoadMore={loadMore}
+          onNewChat={onNewChat}
+          onRetry={retry}
+          onSelect={(chat) => onSelectChat(chat.id)}
         />
       </div>
       <div className={cn('min-h-0 min-w-0', activeChatId ? 'flex' : 'hidden md:flex')}>

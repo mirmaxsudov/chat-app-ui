@@ -1,11 +1,11 @@
 export type FileUploadStatus =
+  | 'cancelled'
+  | 'error'
   | 'idle'
-  | 'validating'
-  | 'uploading'
   | 'paused'
   | 'success'
-  | 'error'
-  | 'cancelled';
+  | 'uploading'
+  | 'validating';
 
 export interface TusCapabilities {
   extensions: string[];
@@ -37,12 +37,12 @@ export interface UseFileUploadOptions {
   chunkSize?: number;
   discoverServerCapabilities?: boolean;
   endpoint?: string;
-  getAccessToken: () => string | null;
   maxFileSize?: number;
+  retryDelays?: readonly number[];
+  getAccessToken: () => string | null;
   onError?: (error: Error) => void;
   onSuccess?: (result: FileUploadResult) => void;
   onUnauthorized?: () => void;
-  retryDelays?: readonly number[];
 }
 
 export interface UseFileUploadResult {
@@ -53,9 +53,7 @@ export interface UseFileUploadResult {
   canCancel: boolean;
   canPause: boolean;
   canResume: boolean;
-  cancelUpload: () => Promise<void>;
   capabilities: TusCapabilities | null;
-  discoverCapabilities: () => Promise<TusCapabilities>;
   error: Error | null;
   estimatedSecondsRemaining: number | null;
   file: File | null;
@@ -66,13 +64,15 @@ export interface UseFileUploadResult {
   isSuccess: boolean;
   isUploading: boolean;
   maxFileSize: number | null;
-  pauseUpload: () => Promise<void>;
   percentage: number;
-  reset: () => Promise<void>;
   result: FileUploadResult | null;
-  resumeUpload: () => void;
-  startUpload: (file: File, options?: StartFileUploadOptions) => Promise<FileUploadResult>;
   status: FileUploadStatus;
   uploadId: string | null;
   uploadUrl: string | null;
+  cancelUpload: () => Promise<void>;
+  discoverCapabilities: () => Promise<TusCapabilities>;
+  pauseUpload: () => Promise<void>;
+  reset: () => Promise<void>;
+  resumeUpload: () => void;
+  startUpload: (file: File, options?: StartFileUploadOptions) => Promise<FileUploadResult>;
 }

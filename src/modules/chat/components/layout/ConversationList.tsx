@@ -1,25 +1,27 @@
-import { useMemo, useState } from 'react';
 import { LogOut, MessageSquarePlus, Search } from 'lucide-react';
-import { Button } from '@/shared/ui/button';
-import { InputGroup, InputGroupAddon, InputGroupInput } from '@/shared/ui/input-group';
-import { ScrollArea } from '@/shared/ui/scroll-area';
-import { cn } from '@/shared/lib/utils.ts';
-import { ChatAvatar } from './ChatAvatar';
-import { RequestState } from './RequestState';
-import { UserProfileDialog } from '@/modules/user';
+import { useMemo, useState } from 'react';
+
 import { useAuth } from '@/modules/auth/hooks';
+import { UserProfileDialog } from '@/modules/user';
+import { cn } from '@/shared/lib/utils.ts';
+import { Button } from '@/shared/ui/button.tsx';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/shared/ui/input-group.tsx';
+import { ScrollArea } from '@/shared/ui/scroll-area.tsx';
+
+import { ChatAvatar } from '../ChatAvatar.tsx';
+import { RequestState } from '../RequestState.tsx';
 
 interface ConversationListProps {
-  chats: ChatSummary[];
   activeChatId: string | null;
-  onSelect: (chat: ChatSummary) => void;
-  onNewChat: () => void;
-  loading: boolean;
+  chats: ChatSummary[];
   error?: string;
-  onRetry: () => void;
   hasMore: boolean;
+  loading: boolean;
   loadingMore: boolean;
   onLoadMore: () => void;
+  onNewChat: () => void;
+  onRetry: () => void;
+  onSelect: (chat: ChatSummary) => void;
 }
 
 export const ConversationList = ({
@@ -38,7 +40,7 @@ export const ConversationList = ({
   const filteredChats = useMemo(
     () =>
       chats.filter((chat) =>
-        (chat.name + ' ' + (chat.username ?? '') + ' ' + chat.message)
+        (`${chat.name  } ${  chat.username ?? ''  } ${  chat.message}`)
           .toLocaleLowerCase()
           .includes(query.trim().toLocaleLowerCase())
       ),
@@ -49,15 +51,15 @@ export const ConversationList = ({
 
   return (
     <aside
-      className='flex h-full min-h-0 flex-col border-r border-[#dfe6eb] bg-white'
       aria-label='Conversations'
+      className='flex h-full min-h-0 flex-col border-r border-[#dfe6eb] bg-white'
     >
       <div className='flex h-17 shrink-0 items-center gap-2 px-3'>
         <Button
-          variant='ghost'
-          size='icon-lg'
-          className='size-10 rounded-full text-[#6d7d89]'
           aria-label='New conversation'
+          className='size-10 rounded-full text-[#6d7d89]'
+          size='icon-lg'
+          variant='ghost'
           onClick={onNewChat}
         >
           <MessageSquarePlus className='size-5' />
@@ -67,10 +69,10 @@ export const ConversationList = ({
             <Search className='size-4 text-[#83929d]' />
           </InputGroupAddon>
           <InputGroupInput
-            value={query}
-            placeholder='Search loaded chats'
             aria-label='Search conversations'
             className='h-10 text-sm'
+            placeholder='Search loaded chats'
+            value={query}
             onChange={(event) => setQuery(event.target.value)}
           />
         </InputGroup>
@@ -84,12 +86,12 @@ export const ConversationList = ({
             return (
               <button
                 key={chat.id}
-                type='button'
-                aria-current={active ? 'true' : undefined}
                 className={cn(
                   'group flex w-full items-center gap-3 rounded-xl px-2.5 py-2.5 text-left transition-colors focus-visible:outline-2 focus-visible:outline-[#168acd]',
                   active ? 'bg-[#168acd] text-white' : 'hover:bg-[#f2f6f8]'
                 )}
+                aria-current={active ? 'true' : undefined}
+                type='button'
                 onClick={() => onSelect(chat)}
               >
                 <ChatAvatar chat={chat} />
@@ -129,9 +131,9 @@ export const ConversationList = ({
           {hasMore && (
             <div className='px-3 py-4'>
               <Button
-                variant='outline'
                 className='w-full'
                 disabled={loadingMore}
+                variant='outline'
                 onClick={onLoadMore}
               >
                 {loadingMore ? 'Loading…' : 'Load more conversations'}
@@ -143,11 +145,11 @@ export const ConversationList = ({
       <div className='flex shrink-0 items-center gap-3 border-t border-[#e4eaee] px-4 py-3'>
         <UserProfileDialog user={me} />
         <Button
-          variant='ghost'
-          size='icon'
-          className='rounded-full text-[#7b8993]'
-          title='Log out'
           aria-label='Log out'
+          className='rounded-full text-[#7b8993]'
+          size='icon'
+          title='Log out'
+          variant='ghost'
           onClick={logout}
         >
           <LogOut />

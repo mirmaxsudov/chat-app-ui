@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import {
   FileArchive,
   FileAudio,
@@ -7,10 +6,12 @@ import {
   LoaderCircle,
   Play
 } from 'lucide-react';
-import { cn } from '@/shared/lib/utils';
-import { MediaThumbnail } from '@/shared/ui/media-thumbnail';
-import { VideoDialog } from '@/shared/ui/video-dialog';
+import { useEffect, useState } from 'react';
+
 import { observeNearViewport, ProgressiveAttachmentImage } from '@/modules/message';
+import { cn } from '@/shared/lib/utils.ts';
+import { MediaThumbnail } from '@/shared/ui/media-thumbnail.tsx';
+import { VideoDialog } from '@/shared/ui/video-dialog.tsx';
 
 const formatFileSize = (bytes: number) => {
   if (!Number.isFinite(bytes) || bytes < 1) return '0 B';
@@ -63,15 +64,10 @@ const MediaPreview = ({
   return (
     <>
       <MediaThumbnail
-        src={source}
-        alt={attachment.name}
-        fit='cover'
         containerClassName={cn(
           'aspect-video h-full max-h-80 min-h-28 w-full',
           video ? 'bg-black' : 'bg-[#bfd0cc]'
         )}
-        className='transition duration-300 group-hover/media:scale-[1.015]'
-        loadingIndicator={<LoadingIndicator />}
         fallback={
           video ? (
             <span className='block size-full bg-black' />
@@ -82,6 +78,11 @@ const MediaPreview = ({
             </span>
           )
         }
+        alt={attachment.name}
+        className='transition duration-300 group-hover/media:scale-[1.015]'
+        fit='cover'
+        loadingIndicator={<LoadingIndicator />}
+        src={source}
       />
       {video && (
         <span className='pointer-events-none absolute inset-0 z-20 grid place-items-center'>
@@ -106,25 +107,25 @@ const MessageImage = ({ item, pendingKey, onPendingVisibilityChange }: MediaItem
 
   return (
     <div
-      className='group/media relative block min-h-28 overflow-hidden rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-[#168acd]'
       aria-label={`Open image ${attachment.name}`}
+      className='group/media relative block min-h-28 overflow-hidden rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-[#168acd]'
     >
       <ProgressiveAttachmentImage
-        alt={attachment.name}
-        originalUrl={attachment.publicURL}
-        previewUrl={previewUrl}
-        previewStatus={attachment.preview?.status}
-        previewWidth={attachment.preview?.width}
-        previewHeight={attachment.preview?.height}
-        pendingKey={pendingKey}
-        onPendingVisibilityChange={onPendingVisibilityChange}
-        className='max-h-80 transition-transform duration-300 group-hover/media:scale-[1.015]'
         fallback={
           <span className='absolute inset-0 flex min-h-28 items-center justify-center gap-2 bg-[#bfd0cc] px-4 text-xs font-medium text-[#40544f]'>
             <FileIcon type={attachment.type} />
             Image unavailable
           </span>
         }
+        alt={attachment.name}
+        className='max-h-80 transition-transform duration-300 group-hover/media:scale-[1.015]'
+        originalUrl={attachment.publicURL}
+        pendingKey={pendingKey}
+        previewHeight={attachment.preview?.height}
+        previewStatus={attachment.preview?.status}
+        previewUrl={previewUrl}
+        previewWidth={attachment.preview?.width}
+        onPendingVisibilityChange={onPendingVisibilityChange}
       />
     </div>
   );
@@ -153,23 +154,23 @@ const MessageVideo = ({ item, pendingKey, onPendingVisibilityChange }: MediaItem
     <>
       <button
         ref={setContainer}
+        aria-label={`Play video ${attachment.name}`}
+        className='group/media relative block min-h-28 overflow-hidden rounded-xl bg-black text-left outline-none focus-visible:ring-2 focus-visible:ring-[#168acd]'
         type='button'
         onClick={() => setOpen(true)}
-        className='group/media relative block min-h-28 overflow-hidden rounded-xl bg-black text-left outline-none focus-visible:ring-2 focus-visible:ring-[#168acd]'
-        aria-label={`Play video ${attachment.name}`}
       >
-        <MediaPreview item={item} source={previewUrl} video />
+        <MediaPreview video item={item} source={previewUrl} />
       </button>
       {open && (
         <VideoDialog
+          open
           options={{
             autoPlay: true
           }}
-          open
-          onOpenChange={setOpen}
-          source={attachment.publicURL}
           poster={previewUrl}
+          source={attachment.publicURL}
           title={attachment.name}
+          onOpenChange={setOpen}
         />
       )}
     </>
@@ -180,11 +181,11 @@ const MessageFile = ({ item }: { item: ChatMessageAttachment }) => {
   const { attachment } = item;
   return (
     <a
-      href={attachment.publicURL}
-      target='_blank'
-      rel='noreferrer'
-      download={attachment.name}
       className='flex min-w-56 items-center gap-2.5 rounded-xl bg-black/[0.045] p-2 pr-3 transition outline-none hover:bg-black/[0.075] focus-visible:ring-2 focus-visible:ring-[#168acd]'
+      download={attachment.name}
+      href={attachment.publicURL}
+      rel='noreferrer'
+      target='_blank'
     >
       <span className='grid size-10 shrink-0 place-items-center rounded-full bg-[#168acd] text-white shadow-sm'>
         <FileIcon type={attachment.type} />

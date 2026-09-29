@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
-import { test } from 'node:test';
 import { resolve } from 'node:path';
 import { createServer } from 'vite';
+import { it } from 'vitest';
 
 const loadUtilities = async (t) => {
   const server = await createServer({
@@ -32,7 +32,7 @@ const item = (status, uploaded, total, speed = 0) => ({
   uploadUrl: null
 });
 
-test('multiple upload summary combines file progress and active throughput', async (t) => {
+it('multiple upload summary combines file progress and active throughput', async (t) => {
   const { calculateMultipleUploadSummary } = await loadUtilities(t);
   const summary = calculateMultipleUploadSummary([
     item('success', 100, 100),
@@ -49,7 +49,7 @@ test('multiple upload summary combines file progress and active throughput', asy
   assert.equal(summary.queuedCount, 1);
 });
 
-test('multiple upload summary distinguishes success, partial success, and failure', async (t) => {
+it('multiple upload summary distinguishes success, partial success, and failure', async (t) => {
   const { calculateMultipleUploadSummary } = await loadUtilities(t);
 
   assert.equal(calculateMultipleUploadSummary([item('success', 1, 1)]).status, 'success');
@@ -61,7 +61,7 @@ test('multiple upload summary distinguishes success, partial success, and failur
   assert.equal(calculateMultipleUploadSummary([item('cancelled', 0, 1)]).status, 'cancelled');
 });
 
-test('upload concurrency defaults to three and rejects invalid values', async (t) => {
+it('upload concurrency defaults to three and rejects invalid values', async (t) => {
   const { normalizeUploadConcurrency } = await loadUtilities(t);
 
   assert.equal(normalizeUploadConcurrency(undefined), 3);
@@ -70,7 +70,7 @@ test('upload concurrency defaults to three and rejects invalid values', async (t
   assert.equal(normalizeUploadConcurrency(1.5), 3);
 });
 
-test('controller never uploads more files than its concurrency limit', async (t) => {
+it('controller never uploads more files than its concurrency limit', async (t) => {
   const server = await createServer({
     configFile: false,
     resolve: { alias: { '@': resolve('src') } },
@@ -147,7 +147,7 @@ test('controller never uploads more files than its concurrency limit', async (t)
   controller.dispose();
 });
 
-test('controller keeps files pending until startAll is called', async (t) => {
+it('controller keeps files pending until startAll is called', async (t) => {
   const server = await createServer({
     configFile: false,
     resolve: { alias: { '@': resolve('src') } },

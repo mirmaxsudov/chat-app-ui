@@ -1,4 +1,5 @@
 import { LoaderCircle } from 'lucide-react';
+
 import { Button } from '@/shared/ui/button.tsx';
 
 export const RequestState = ({
@@ -14,7 +15,7 @@ export const RequestState = ({
     className='flex flex-col items-center gap-3 px-5 py-8 text-center text-sm text-[#667983]'
     role={onRetry ? 'alert' : 'status'}
   >
-    {loading && <LoaderCircle className='size-5 animate-spin' aria-hidden='true' />}
+    {loading && <LoaderCircle aria-hidden='true' className='size-5 animate-spin' />}
     <p>{message}</p>
     {onRetry && (
       <Button variant='outline' onClick={onRetry}>

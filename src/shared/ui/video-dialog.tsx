@@ -1,3 +1,5 @@
+import type { ComponentProps } from 'react';
+
 import {
   Dialog,
   DialogContent,
@@ -5,15 +7,14 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/shared/ui/dialog';
-import type { ComponentProps } from 'react';
 
 interface VideoDialogProps {
-  onOpenChange: (open: boolean) => void;
   open: boolean;
+  options?: ComponentProps<'video'>;
   poster?: string | null;
   source: string;
   title: string;
-  options?: ComponentProps<'video'>;
+  onOpenChange: (open: boolean) => void;
 }
 
 /** Accessible, reusable native video player presented on a focused media surface. */
@@ -33,14 +34,14 @@ export const VideoDialog = ({
       </DialogHeader>
       <video
         {...options}
-        key={source}
-        src={source}
-        poster={poster ?? undefined}
         controls
         playsInline
-        preload='none'
+        key={source}
         aria-label={title}
         className='max-h-[82vh] min-h-48 w-auto max-w-full bg-black object-contain sm:min-w-xl'
+        poster={poster ?? undefined}
+        preload='none'
+        src={source}
       >
         Your browser does not support video playback.
       </video>

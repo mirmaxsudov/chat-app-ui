@@ -1,5 +1,3 @@
-'use client';
-
 import type { Column } from '@tanstack/react-table';
 
 import { useLingui } from '@lingui/react/macro';
@@ -75,13 +73,15 @@ export const DataTableSliderFilter = <TData,>({
     return { min: minValue, max: maxValue, step };
   }, [column, defaultRange]);
 
-  const range = React.useMemo((): RangeValue => {
-    return columnFilterValue ?? [min, max];
-  }, [columnFilterValue, min, max]);
+  const range = React.useMemo(
+    (): RangeValue => columnFilterValue ?? [min, max],
+    [columnFilterValue, min, max]
+  );
 
-  const formatValue = React.useCallback((value: number) => {
-    return value.toLocaleString(undefined, { maximumFractionDigits: 0 });
-  }, []);
+  const formatValue = React.useCallback(
+    (value: number) => value.toLocaleString(undefined, { maximumFractionDigits: 0 }),
+    []
+  );
 
   const onFromInputChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -131,9 +131,9 @@ export const DataTableSliderFilter = <TData,>({
               <div
                 aria-label={t`Clear ${title} filter`}
                 className='focus-visible:ring-ring rounded-sm opacity-70 transition-opacity hover:opacity-100 focus-visible:ring-1 focus-visible:outline-none'
+                role='button'
                 tabIndex={0}
                 onClick={onReset}
-                role='button'
               >
                 <XCircle />
               </div>
@@ -169,14 +169,14 @@ export const DataTableSliderFilter = <TData,>({
                 aria-valuemin={min}
                 className={cn('h-8 w-24', unit && 'pr-8')}
                 id={`${id}-from`}
+                inputMode='numeric'
                 max={max}
                 min={min}
                 pattern='[0-9]*'
+                placeholder={min.toString()}
                 type='number'
                 value={range[0].toString()}
-                inputMode='numeric'
                 onChange={onFromInputChange}
-                placeholder={min.toString()}
               />
               {unit && (
                 <span className='bg-accent text-muted-foreground absolute top-0 right-0 bottom-0 flex items-center rounded-r-md px-2 text-sm'>
@@ -193,14 +193,14 @@ export const DataTableSliderFilter = <TData,>({
                 aria-valuemin={min}
                 className={cn('h-8 w-24', unit && 'pr-8')}
                 id={`${id}-to`}
+                inputMode='numeric'
                 max={max}
                 min={min}
                 pattern='[0-9]*'
+                placeholder={max.toString()}
                 type='number'
                 value={range[1].toString()}
-                inputMode='numeric'
                 onChange={onToInputChange}
-                placeholder={max.toString()}
               />
               {unit && (
                 <span className='bg-accent text-muted-foreground absolute top-0 right-0 bottom-0 flex items-center rounded-r-md px-2 text-sm'>

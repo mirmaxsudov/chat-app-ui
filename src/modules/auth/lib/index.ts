@@ -1,4 +1,5 @@
 import Cookies from 'js-cookie';
+
 import { COOKIES } from '@/shared/constants';
 
 export const AUTH_SESSION_KEY = 'chat_app_auth_session';

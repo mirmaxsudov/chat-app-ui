@@ -1,11 +1,11 @@
 import { i18n } from '@lingui/core';
+import Cookies from 'js-cookie';
 
 import { COOKIES } from '@/shared/constants';
 
 import type { Locale } from './config';
 
 import { APP_LOCALES, SOURCE_LOCALE } from './config';
-import Cookies from 'js-cookie';
 
 export const dynamicActivate = async (locale: Locale) => {
   if (!APP_LOCALES.includes(locale)) {

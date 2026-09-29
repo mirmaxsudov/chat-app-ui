@@ -1,8 +1,8 @@
 import * as React from 'react';
 import * as RPNInput from 'react-phone-number-input';
 
-import { Input } from '@/shared/ui/input';
 import { cn } from '@/shared/lib/utils.ts';
+import { Input } from '@/shared/ui/input';
 
 type Props = Omit<React.ComponentProps<typeof Input>, 'onChange' | 'ref' | 'value'> &
   Omit<RPNInput.Props<typeof RPNInput.default>, 'className' | 'numberInputProps' | 'onChange'> & {
@@ -10,8 +10,7 @@ type Props = Omit<React.ComponentProps<typeof Input>, 'onChange' | 'ref' | 'valu
     onChange?: (value: RPNInput.Value) => void;
   };
 
-const PhoneInput = ({ className, containerClassName, onChange, ...props }: Props) => {
-  return (
+const PhoneInput = ({ className, containerClassName, onChange, ...props }: Props) => (
     <RPNInput.default
       limitMaxLength
       className={cn('flex', containerClassName)}
@@ -32,7 +31,6 @@ const PhoneInput = ({ className, containerClassName, onChange, ...props }: Props
       {...props}
     />
   );
-};
 PhoneInput.displayName = 'PhoneInput';
 
 export { PhoneInput };

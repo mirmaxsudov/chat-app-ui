@@ -1,5 +1,7 @@
+import type {VariantProps} from 'class-variance-authority';
+
+import { cva  } from 'class-variance-authority';
 import * as React from 'react';
-import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '@/shared/lib/utils.ts';
 
@@ -19,55 +21,47 @@ const alertVariants = cva(
   }
 );
 
-function Alert({
+const Alert = ({
   className,
   variant,
   ...props
-}: React.ComponentProps<'div'> & VariantProps<typeof alertVariants>) {
-  return (
+}: React.ComponentProps<'div'> & VariantProps<typeof alertVariants>) => (
     <div
+      className={cn(alertVariants({ variant }), className)}
       data-slot='alert'
       role='alert'
-      className={cn(alertVariants({ variant }), className)}
       {...props}
     />
-  );
-}
+  )
 
-function AlertTitle({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
+const AlertTitle = ({ className, ...props }: React.ComponentProps<'div'>) => (
     <div
-      data-slot='alert-title'
       className={cn(
         '[&_a]:hover:text-foreground font-medium group-has-[>svg]/alert:col-start-2 [&_a]:underline [&_a]:underline-offset-3',
         className
       )}
+      data-slot='alert-title'
       {...props}
     />
-  );
-}
+  )
 
-function AlertDescription({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
+const AlertDescription = ({ className, ...props }: React.ComponentProps<'div'>) => (
     <div
-      data-slot='alert-description'
       className={cn(
         'text-muted-foreground [&_a]:hover:text-foreground text-xs/relaxed text-balance md:text-pretty [&_a]:underline [&_a]:underline-offset-3 [&_p:not(:last-child)]:mb-4',
         className
       )}
+      data-slot='alert-description'
       {...props}
     />
-  );
-}
+  )
 
-function AlertAction({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
+const AlertAction = ({ className, ...props }: React.ComponentProps<'div'>) => (
     <div
-      data-slot='alert-action'
       className={cn('absolute top-1.5 right-2', className)}
+      data-slot='alert-action'
       {...props}
     />
-  );
-}
+  )
 
-export { Alert, AlertTitle, AlertDescription, AlertAction };
+export { Alert, AlertAction, AlertDescription, AlertTitle };

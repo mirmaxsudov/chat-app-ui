@@ -1,8 +1,8 @@
+import { QueryClient } from '@tanstack/react-query';
 import assert from 'node:assert/strict';
-import { after, test } from 'node:test';
 import { resolve } from 'node:path';
 import { createServer } from 'vite';
-import { QueryClient } from '@tanstack/react-query';
+import { after, it } from 'vitest';
 
 // All transport is intercepted. These tests never contact the configured backend.
 const server = await createServer({
@@ -32,10 +32,10 @@ const { insertConfirmedMessage } = await server.ssrLoadModule(
 );
 
 const message = (seq) => ({
-  id: 'm-' + seq,
+  id: `m-${  seq}`,
   seq,
   senderId: 'user',
-  text: 'Message ' + seq,
+  text: `Message ${  seq}`,
   createdAt: '2026-09-03T10:00:00',
   mine: true
 });
@@ -66,7 +66,7 @@ const mockTransport = (handler) => {
 const client = () =>
   new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
 
-test('chat views use API presence and never invent messages', () => {
+it('chat views use API presence and never invent messages', () => {
   const summary = toChatSummary(chat);
   assert.equal(summary.name, 'tester');
   assert.equal(summary.message, 'No messages yet');
@@ -78,7 +78,7 @@ test('chat views use API presence and never invent messages', () => {
   assert.equal(saved.presence, null);
 });
 
-test('message history is chronological and deduplicates overlapping cursor pages', () => {
+it('message history is chronological and deduplicates overlapping cursor pages', () => {
   const result = chronologicalMessages([
     { messages: [message(3), message(2)], nextBeforeSeq: 2, hasMore: true },
     { messages: [message(2), message(1)], nextBeforeSeq: null, hasMore: false }
@@ -89,7 +89,7 @@ test('message history is chronological and deduplicates overlapping cursor pages
   );
 });
 
-test('confirmed sends preserve older-page cursors and cannot duplicate a message', () => {
+it('confirmed sends preserve older-page cursors and cannot duplicate a message', () => {
   const history = {
     pages: [
       { messages: [message(2)], nextBeforeSeq: 2, hasMore: true },
@@ -110,7 +110,7 @@ test('confirmed sends preserve older-page cursors and cannot duplicate a message
   );
 });
 
-test('chat queries paginate through real request functions with a Bearer header', async () => {
+it('chat queries paginate through real request functions with a Bearer header', async () => {
   const calls = [];
   setAccessTokenGetter(() => 'test-only-token');
   mockTransport((config) => {
@@ -120,7 +120,7 @@ test('chat queries paginate through real request functions with a Bearer header'
     return {
       success: true,
       message: 'OK',
-      results: [{ ...chat, id: 'chat-' + config.params.page }],
+      results: [{ ...chat, id: `chat-${  config.params.page}` }],
       page: config.params.page,
       size: 20,
       total: 2,
@@ -141,7 +141,7 @@ test('chat queries paginate through real request functions with a Bearer header'
   }
 });
 
-test('message queries use beforeSeq and stop when hasMore is false', async () => {
+it('message queries use beforeSeq and stop when hasMore is false', async () => {
   const calls = [];
   mockTransport((config) => {
     calls.push(config);
@@ -171,7 +171,7 @@ test('message queries use beforeSeq and stop when hasMore is false', async () =>
   }
 });
 
-test('detail/create/send operations unwrap server responses and send exact JSON', async () => {
+it('detail/create/send operations unwrap server responses and send exact JSON', async () => {
   mockTransport((config) => {
     if (config.url === '/chats/dm') {
       assert.equal(config.method, 'post');
@@ -200,7 +200,7 @@ test('detail/create/send operations unwrap server responses and send exact JSON'
   }
 });
 
-test('request failures reject without inserting a locally fabricated message', async () => {
+it('request failures reject without inserting a locally fabricated message', async () => {
   mockTransport(() => {
     throw new Error('Network unavailable');
   });

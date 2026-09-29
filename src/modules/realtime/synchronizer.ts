@@ -1,13 +1,17 @@
-import { type InfiniteData, notifyManager, type QueryClient } from '@tanstack/react-query';
-import type { RealtimeMessageEvent } from './event';
-import { presenceStore } from '@/modules/presence';
+import type {InfiniteData, QueryClient} from '@tanstack/react-query';
+
+import {  notifyManager  } from '@tanstack/react-query';
+
 import {
   applyMessagesToCache,
   applyMessageToCache,
   CHAT_QUERY_OPTIONS,
   chatByIdQueryOptions
 } from '@/modules/chat';
+import { presenceStore } from '@/modules/presence';
 import { getChatMessages } from '@/utils/api';
+
+import type { RealtimeMessageEvent } from './event';
 
 type History = InfiniteData<ApiMessagesResponse>;
 

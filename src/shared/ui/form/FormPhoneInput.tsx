@@ -18,7 +18,7 @@ export const FormPhoneInput = ({
   const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
 
   return (
-    <FormBase isRequired={isRequired} label={label} description={description}>
+    <FormBase description={description} isRequired={isRequired} label={label}>
       <PhoneInput
         aria-invalid={isInvalid}
         id={field.name}

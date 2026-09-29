@@ -5,8 +5,11 @@ import { format } from 'date-fns';
 import { ru } from 'date-fns/locale/ru';
 import { uz } from 'date-fns/locale/uz';
 import Cookies from 'js-cookie';
-import { type Locale, SOURCE_LOCALE } from '@/shared/i18n';
+
+import type {Locale} from '@/shared/i18n';
+
 import { COOKIES } from '@/shared/constants';
+import {  SOURCE_LOCALE } from '@/shared/i18n';
 
 export const formatPhoneNumber = (phoneNumber: string) =>
   phoneNumber.replace(/(\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/, '$1 ($2) $3 $4 $5');

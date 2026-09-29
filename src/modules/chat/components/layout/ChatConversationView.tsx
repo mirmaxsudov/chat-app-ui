@@ -1,10 +1,11 @@
 import { useState } from 'react';
+
+import { RequestState } from '@/modules/chat';
+import { MessageComposer, MessageTimeline } from '@/modules/message';
 import { Button } from '@/shared/ui/button';
+
 import { ChatDetails } from './ChatDetails';
 import { ChatHeader } from './ChatHeader';
-import { MessageComposer } from '@/modules/chat';
-import { MessageTimeline } from '@/modules/chat';
-import { RequestState } from './RequestState';
 
 interface ChatConversationProps {
   chat?: ChatSummary;
@@ -12,16 +13,16 @@ interface ChatConversationProps {
   chatLoading: boolean;
   hasMoreMessages: boolean;
   loadingMoreMessages: boolean;
-  loadMoreMessages: () => void;
   messages: ChatMessage[];
   messagesError?: string;
   messagesLoading: boolean;
-  onBack: () => void;
-  retryChat: () => void;
-  retryMessages: () => void;
-  refreshPendingPreviews: () => Promise<unknown>;
   sendError?: string;
   sending: boolean;
+  loadMoreMessages: () => void;
+  onBack: () => void;
+  refreshPendingPreviews: () => Promise<unknown>;
+  retryChat: () => void;
+  retryMessages: () => void;
   sendMessage: (text: string, attachments: string[]) => Promise<boolean>;
 }
 
@@ -48,7 +49,7 @@ export const ChatConversationView = ({
   if (chatLoading || chatError || !chat) {
     return (
       <section className='flex min-h-0 flex-1 flex-col bg-[#dce8e5]'>
-        <Button variant='ghost' className='m-3 self-start' onClick={onBack}>
+        <Button className='m-3 self-start' variant='ghost' onClick={onBack}>
           Back to conversations
         </Button>
         <RequestState
@@ -69,19 +70,19 @@ export const ChatConversationView = ({
           onToggleDetails={() => setShowDetails((open) => !open)}
         />
         <MessageTimeline
-          messages={messages}
-          loading={messagesLoading}
           error={messagesError}
-          onRetry={retryMessages}
           hasMore={hasMoreMessages}
+          loading={messagesLoading}
           loadingMore={loadingMoreMessages}
+          messages={messages}
           onLoadMore={loadMoreMessages}
           onRefreshPendingPreviews={refreshPendingPreviews}
+          onRetry={retryMessages}
         />
         <MessageComposer
-          isSending={sending}
           disabled={messagesLoading || Boolean(messagesError)}
           error={sendError}
+          isSending={sending}
           onSend={sendMessage}
         />
       </section>

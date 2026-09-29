@@ -17,7 +17,7 @@ export const calculateMultipleUploadSummary = (
   const pendingCount = items.filter((item) => item.status === 'pending').length;
   const queuedCount = items.filter((item) => item.status === 'queued').length;
   const uploadingCount = items.filter((item) =>
-    ['validating', 'uploading'].includes(item.status)
+    ['uploading', 'validating'].includes(item.status)
   ).length;
   const pausedCount = items.filter((item) => item.status === 'paused').length;
   const successCount = items.filter((item) => item.status === 'success').length;

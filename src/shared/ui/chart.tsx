@@ -1,6 +1,7 @@
+import type { TooltipValueType } from 'recharts';
+
 import * as React from 'react';
 import * as RechartsPrimitive from 'recharts';
-import type { TooltipValueType } from 'recharts';
 
 import { cn } from '@/shared/lib/utils.ts';
 
@@ -16,14 +17,14 @@ export type ChartConfig = Record<
     label?: React.ReactNode;
     icon?: React.ComponentType;
   } & (
-    | { color?: string; theme?: never }
     | { color?: never; theme: Record<keyof typeof THEMES, string> }
+    | { color?: string; theme?: never }
   )
 >;
 
-type ChartContextProps = {
+interface ChartContextProps {
   config: ChartConfig;
-};
+}
 
 const ChartContext = React.createContext<ChartContextProps | null>(null);
 
@@ -37,7 +38,7 @@ function useChart() {
   return context;
 }
 
-function ChartContainer({
+const ChartContainer = ({
   id,
   className,
   children,
@@ -51,22 +52,22 @@ function ChartContainer({
     width: number;
     height: number;
   };
-}) {
+}) => {
   const uniqueId = React.useId();
   const chartId = `chart-${id ?? uniqueId.replace(/:/g, '')}`;
 
   return (
     <ChartContext.Provider value={{ config }}>
       <div
-        data-slot='chart'
-        data-chart={chartId}
         className={cn(
           "[&_.recharts-cartesian-axis-tick_text]:fill-muted-foreground [&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-border/50 [&_.recharts-curve.recharts-tooltip-cursor]:stroke-border [&_.recharts-polar-grid_[stroke='#ccc']]:stroke-border [&_.recharts-radial-bar-background-sector]:fill-muted [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-muted [&_.recharts-reference-line_[stroke='#ccc']]:stroke-border flex aspect-video justify-center text-xs [&_.recharts-dot[stroke='#fff']]:stroke-transparent [&_.recharts-layer]:outline-hidden [&_.recharts-sector]:outline-hidden [&_.recharts-sector[stroke='#fff']]:stroke-transparent [&_.recharts-surface]:outline-hidden",
           className
         )}
+        data-chart={chartId}
+        data-slot='chart'
         {...props}
       >
-        <ChartStyle id={chartId} config={config} />
+        <ChartStyle config={config} id={chartId} />
         <RechartsPrimitive.ResponsiveContainer initialDimension={initialDimension}>
           {children}
         </RechartsPrimitive.ResponsiveContainer>
@@ -106,7 +107,7 @@ ${colorConfig
 
 const ChartTooltip = RechartsPrimitive.Tooltip;
 
-function ChartTooltipContent({
+const ChartTooltipContent = ({
   active,
   payload,
   className,
@@ -124,13 +125,13 @@ function ChartTooltipContent({
   React.ComponentProps<'div'> & {
     hideLabel?: boolean;
     hideIndicator?: boolean;
-    indicator?: 'line' | 'dot' | 'dashed';
+    indicator?: 'dashed' | 'dot' | 'line';
     nameKey?: string;
     labelKey?: string;
   } & Omit<
     RechartsPrimitive.DefaultTooltipContentProps<TooltipValueType, TooltipNameType>,
     'accessibilityLayer'
-  >) {
+  >) => {
   const { config } = useChart();
 
   const tooltipLabel = React.useMemo(() => {
@@ -247,7 +248,7 @@ function ChartTooltipContent({
 
 const ChartLegend = RechartsPrimitive.Legend;
 
-function ChartLegendContent({
+const ChartLegendContent = ({
   className,
   hideIcon = false,
   payload,
@@ -256,7 +257,7 @@ function ChartLegendContent({
 }: React.ComponentProps<'div'> & {
   hideIcon?: boolean;
   nameKey?: string;
-} & RechartsPrimitive.DefaultLegendContentProps) {
+} & RechartsPrimitive.DefaultLegendContentProps) => {
   const { config } = useChart();
 
   if (!payload?.length) {
@@ -288,10 +289,10 @@ function ChartLegendContent({
                 <itemConfig.icon />
               ) : (
                 <div
-                  className='h-2 w-2 shrink-0 rounded-[2px]'
                   style={{
                     backgroundColor: item.color
                   }}
+                  className='h-2 w-2 shrink-0 rounded-[2px]'
                 />
               )}
               {itemConfig?.label}
@@ -329,9 +330,9 @@ function getPayloadConfigFromPayload(config: ChartConfig, payload: unknown, key:
 
 export {
   ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
-  ChartStyle
+  ChartStyle,
+  ChartTooltip,
+  ChartTooltipContent
 };

@@ -18,7 +18,7 @@ export const FormDatePicker = (props: FormControlProps) => {
   const [open, setOpen] = React.useState(false);
 
   return (
-    <Popover onOpenChange={setOpen} open={open}>
+    <Popover open={open} onOpenChange={setOpen}>
       <FormBase {...props}>
         <PopoverTrigger
           render={
@@ -37,9 +37,9 @@ export const FormDatePicker = (props: FormControlProps) => {
       </FormBase>
       <PopoverContent align='start' className='w-auto overflow-hidden p-0'>
         <Calendar
-          selected={field.state.value}
           captionLayout='dropdown'
           mode='single'
+          selected={field.state.value}
           onSelect={(date) => {
             field.handleChange(date);
             setOpen(false);

@@ -1,12 +1,14 @@
-import { useMemo } from 'react';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMemo } from 'react';
+
+import { chatByIdQueryOptions } from '@/modules/chat';
+import { chatMessagesInfiniteQueryOptions } from '@/modules/message';
+import { usePresenceStore } from '@/modules/presence';
+import { postSendMessage } from '@/utils/api';
+
 import { applyMessageToCache } from '../helpers/chat-cache';
 import { chronologicalMessages, toChatSummary } from '../helpers/chat-view';
 import { requestErrorMessage } from '../helpers/request-error';
-import { usePresenceStore } from '@/modules/presence';
-import { chatByIdQueryOptions } from '@/modules/chat';
-import { chatMessagesInfiniteQueryOptions } from '@/modules/message';
-import { postSendMessage } from '@/utils/api';
 
 export const useChatConversation = (chatId: string) => {
   const presenceByUserId = usePresenceStore((state) => state.byUserId);

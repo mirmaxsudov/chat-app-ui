@@ -1,25 +1,25 @@
 interface ApiPaginationResponse<T> {
-  success: boolean;
-  message: string;
-  results: T[];
-  total: number;
-  page: number;
-  size: number;
   hasNext: boolean;
   hasPrev: boolean;
+  message: string;
+  page: number;
+  results: T[];
+  size: number;
+  success: boolean;
+  total: number;
 }
 
 interface ApiResponse<T> {
-  success: boolean;
-  message: string;
   data: T;
+  message: string;
+  success: boolean;
 }
 
 interface ApiError {
-  message: string;
+  code: number;
   httpStatus: string;
   localDateTime: string;
-  code: number;
+  message: string;
 }
 
 type ValidationErrors = Record<string, string>;

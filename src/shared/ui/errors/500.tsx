@@ -3,15 +3,16 @@ import type { ErrorComponentProps, ErrorRouteComponent } from '@tanstack/react-r
 import { useLingui } from '@lingui/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from '@tanstack/react-router';
+
 import { Button } from '@/shared/ui/button';
 
 interface RouteError extends Error {
-  status?: number;
   response?: {
     data?: {
       message?: string;
     };
   };
+  status?: number;
 }
 
 export const GeneralError: ErrorRouteComponent = ({ error }: ErrorComponentProps<RouteError>) => {

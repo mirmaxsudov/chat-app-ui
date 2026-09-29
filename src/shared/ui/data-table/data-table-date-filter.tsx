@@ -4,11 +4,11 @@ import type { DateRange } from 'react-day-picker';
 import { CalendarIcon, XCircle } from 'lucide-react';
 import * as React from 'react';
 
+import { formatDate } from '@/shared/lib/format';
 import { Button } from '@/shared/ui/button';
 import { Calendar } from '@/shared/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { Separator } from '@/shared/ui/separator';
-import { formatDate } from '@/shared/lib/format';
 
 type DateSelection = Date[] | DateRange;
 
@@ -168,9 +168,9 @@ export const DataTableDateFilter = <TData,>({
               <div
                 aria-label={`Clear ${title} filter`}
                 className='focus-visible:ring-ring rounded-sm opacity-70 transition-opacity hover:opacity-100 focus-visible:ring-1 focus-visible:outline-none'
+                role='button'
                 tabIndex={0}
                 onClick={onReset}
-                role='button'
               >
                 <XCircle />
               </div>
@@ -184,18 +184,18 @@ export const DataTableDateFilter = <TData,>({
       <PopoverContent align='start' className='w-auto p-0'>
         {multiple ? (
           <Calendar
+            autoFocus
             selected={
               getIsDateRange(selectedDates) ? selectedDates : { from: undefined, to: undefined }
             }
-            autoFocus
             mode='range'
             onSelect={onSelect}
           />
         ) : (
           <Calendar
-            selected={!getIsDateRange(selectedDates) ? selectedDates[0] : undefined}
             autoFocus
             mode='single'
+            selected={!getIsDateRange(selectedDates) ? selectedDates[0] : undefined}
             onSelect={onSelect}
           />
         )}

@@ -1,17 +1,19 @@
-import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from '@tanstack/react-router';
 import { isAxiosError } from 'axios';
-import { createChatSynchronizer } from './synchronizer.ts';
-import { resolveSockJsUrl, startMessageConnection } from './connection.ts';
-import { presenceStore } from '@/modules/presence';
+import { useEffect } from 'react';
+
 import {
   AUTH_SESSION_CHANGED,
   AUTH_SESSION_KEY,
   clearAuthSession,
   getAccessToken
 } from '@/modules/auth';
+import { presenceStore } from '@/modules/presence';
 import { getCurrentUser } from '@/utils/api';
+
+import { resolveSockJsUrl, startMessageConnection } from './connection.ts';
+import { createChatSynchronizer } from './synchronizer.ts';
 
 export const useChatRealtime = () => {
   const queryClient = useQueryClient();

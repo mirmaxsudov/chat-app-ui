@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import { test } from 'node:test';
 import { resolve } from 'node:path';
 import { createServer } from 'vite';
 
@@ -14,7 +13,7 @@ const loadUtilities = async (t) => {
   return server.ssrLoadModule('/src/shared/hooks/use-file-upload/file-upload.utils.ts');
 };
 
-test('upload helpers normalize endpoints and parse TUS capabilities', async (t) => {
+it('upload helpers normalize endpoints and parse TUS capabilities', async (t) => {
   const { parseTusCapabilities, resolveUploadEndpoint } = await loadUtilities(t);
 
   assert.equal(resolveUploadEndpoint('https://api.example.com/', undefined), 'https://api.example.com/files');
@@ -35,7 +34,7 @@ test('upload helpers normalize endpoints and parse TUS capabilities', async (t) 
   );
 });
 
-test('upload validation rejects empty and oversized files', async (t) => {
+it('upload validation rejects empty and oversized files', async (t) => {
   const { validateFile } = await loadUtilities(t);
   const emptyFile = { size: 0 };
   const largeFile = { size: 11 };
@@ -52,7 +51,7 @@ test('upload validation rejects empty and oversized files', async (t) => {
   });
 });
 
-test('progress reports percentage, throughput, and remaining time', async (t) => {
+it('progress reports percentage, throughput, and remaining time', async (t) => {
   const { calculateProgress } = await loadUtilities(t);
   const progress = calculateProgress(500, 1_000, 1_000, 3_000);
 
@@ -61,7 +60,7 @@ test('progress reports percentage, throughput, and remaining time', async (t) =>
   assert.equal(progress.estimatedSecondsRemaining, 2);
 });
 
-test('TUS environment config converts retry seconds to milliseconds', async (t) => {
+it('TUS environment config converts retry seconds to milliseconds', async (t) => {
   const server = await createServer({
     configFile: false,
     resolve: { alias: { '@': resolve('src') } },

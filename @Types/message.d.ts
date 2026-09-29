@@ -1,18 +1,17 @@
-type PreviewStatus = 'NOT_APPLICABLE' | 'PENDING' | 'PROCESSING' | 'READY' | 'FAILED';
-type AttachmentType = 'IMAGE' | 'VIDEO' | 'EXCEL' | 'AUDIO' | 'PDF' | 'PPT' | 'OTHERS';
+type PreviewStatus = 'FAILED' | 'NOT_APPLICABLE' | 'PENDING' | 'PROCESSING' | 'READY';
+type AttachmentType = 'AUDIO' | 'EXCEL' | 'IMAGE' | 'OTHERS' | 'PDF' | 'PPT' | 'VIDEO';
 
 interface ChatMessage {
-  id: string;
-  seq: number;
-  senderId: string;
-  text: string;
-  createdAt: string;
-  mine: boolean;
   attachments: ChatMessageAttachment[];
+  createdAt: string;
+  id: string;
+  mine: boolean;
+  senderId: string;
+  seq: number;
+  text: string;
 }
 
 interface ChatMessageAttachment {
-  sortOrder: number;
   attachment: {
     name: string;
     contentType: string;
@@ -22,13 +21,14 @@ interface ChatMessageAttachment {
     type: AttachmentType;
     preview: AttachmentPreview | null;
   };
+  sortOrder: number;
 }
 
 interface AttachmentPreview {
+  contentType: 'image/jpeg' | 'image/png' | null;
+  height: number | null;
+  sizeBytes: number | null;
   status: PreviewStatus;
   url: string | null;
-  contentType: 'image/jpeg' | 'image/png' | null;
-  sizeBytes: number | null;
   width: number | null;
-  height: number | null;
 }

@@ -1,9 +1,11 @@
 import { X } from 'lucide-react';
-import { Button } from '@/shared/ui/button';
-import { Separator } from '@/shared/ui/separator';
-import { ChatAvatar } from './ChatAvatar';
+
 import { formatMessageDate } from '@/modules/chat';
 import { presenceLabel } from '@/modules/presence';
+import { Button } from '@/shared/ui/button.tsx';
+import { Separator } from '@/shared/ui/separator.tsx';
+
+import { ChatAvatar } from '../ChatAvatar.tsx';
 
 export const ChatDetails = ({ chat, onClose }: { chat: ChatSummary; onClose: () => void }) => (
   <aside
@@ -12,10 +14,10 @@ export const ChatDetails = ({ chat, onClose }: { chat: ChatSummary; onClose: () 
   >
     <div className='flex h-[68px] shrink-0 items-center gap-3 border-b border-[#dfe6eb] px-4'>
       <Button
-        variant='ghost'
-        size='icon-lg'
-        className='rounded-full text-[#71808b]'
         aria-label='Close details'
+        className='rounded-full text-[#71808b]'
+        size='icon-lg'
+        variant='ghost'
         onClick={onClose}
       >
         <X className='size-5' />

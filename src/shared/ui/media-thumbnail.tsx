@@ -1,4 +1,6 @@
-import { useState, type ComponentProps, type ReactNode } from 'react';
+import type {ComponentProps, ReactNode} from 'react';
+
+import {   useState } from 'react';
 
 import { cn } from '@/shared/lib/utils';
 
@@ -19,28 +21,28 @@ const LoadedThumbnail = ({
   src,
   ...props
 }: Omit<MediaThumbnailProps, 'containerClassName'> & { src: string }) => {
-  const [status, setStatus] = useState<'loading' | 'loaded' | 'error'>('loading');
+  const [status, setStatus] = useState<'error' | 'loaded' | 'loading'>('loading');
 
   return (
     <>
       {status !== 'error' && (
         <img
           {...props}
-          src={src}
-          alt={alt}
           className={cn(
             'absolute inset-0 z-10 size-full transition-opacity duration-300',
             fit === 'contain' ? 'object-contain' : 'object-cover',
             status === 'loaded' ? 'opacity-100' : 'opacity-0',
             className
           )}
-          onLoad={(event) => {
-            setStatus('loaded');
-            props.onLoad?.(event);
-          }}
+          alt={alt}
+          src={src}
           onError={(event) => {
             setStatus('error');
             props.onError?.(event);
+          }}
+          onLoad={(event) => {
+            setStatus('loaded');
+            props.onLoad?.(event);
           }}
         />
       )}
@@ -65,9 +67,9 @@ export const MediaThumbnail = ({
   ...props
 }: MediaThumbnailProps) => (
   <span
+    className={cn('relative block overflow-hidden', containerClassName)}
     data-slot='media-thumbnail'
     data-state={src ? 'available' : 'pending'}
-    className={cn('relative block overflow-hidden', containerClassName)}
   >
     {!src ? (
       <span className='absolute inset-0 z-0'>{fallback}</span>
@@ -75,12 +77,12 @@ export const MediaThumbnail = ({
       <LoadedThumbnail
         key={src}
         {...props}
-        src={src}
         alt={alt}
         className={className}
         fallback={fallback}
         fit={fit}
         loadingIndicator={loadingIndicator}
+        src={src}
       />
     )}
   </span>

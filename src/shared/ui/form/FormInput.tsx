@@ -13,7 +13,7 @@ export const FormInput = ({ label, description, isRequired, ...props }: FormInpu
   const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
 
   return (
-    <FormBase isRequired={isRequired} label={label} description={description}>
+    <FormBase description={description} isRequired={isRequired} label={label}>
       <Input
         aria-invalid={isInvalid}
         id={field.name}

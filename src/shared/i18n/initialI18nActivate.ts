@@ -1,6 +1,10 @@
 import Cookies from 'js-cookie';
+
 import { COOKIES } from '@/shared/constants';
-import { APP_LOCALES, type Locale, SOURCE_LOCALE } from './config';
+
+import type {Locale} from './config';
+
+import { APP_LOCALES,  SOURCE_LOCALE } from './config';
 import { dynamicActivate } from './dynamicActivate';
 
 export const initialI18nActivate = () => {

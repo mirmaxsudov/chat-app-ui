@@ -6,17 +6,17 @@ import type {
 } from '../use-file-upload';
 
 export type MultipleFileUploadItemStatus =
-  'pending' | 'queued' | 'validating' | 'uploading' | 'paused' | 'success' | 'error' | 'cancelled';
+  'cancelled' | 'error' | 'paused' | 'pending' | 'queued' | 'success' | 'uploading' | 'validating';
 
 export type MultipleFileUploadStatus =
-  | 'idle'
-  | 'pending'
-  | 'uploading'
-  | 'paused'
-  | 'success'
-  | 'partial-success'
+  | 'cancelled'
   | 'error'
-  | 'cancelled';
+  | 'idle'
+  | 'partial-success'
+  | 'paused'
+  | 'pending'
+  | 'success'
+  | 'uploading';
 
 export interface MultipleFileUploadItem extends FileUploadProgress {
   attachmentId: string | null;
@@ -47,25 +47,25 @@ export interface AddFilesOptions extends StartFileUploadOptions {
 }
 
 export interface UseMultipleFileUploadOptions {
-  autoStart?: boolean;
   autoResume?: boolean;
+  autoStart?: boolean;
   chunkSize?: number;
   concurrency?: number;
   discoverServerCapabilities?: boolean;
   endpoint?: string;
-  getAccessToken: () => string | null;
   maxFileSize?: number;
-  onUnauthorized?: () => void;
   retryDelays?: readonly number[];
+  getAccessToken: () => string | null;
+  onUnauthorized?: () => void;
 }
 
 export interface UseMultipleFileUploadResult extends MultipleFileUploadSummary {
+  capabilities: TusCapabilities | null;
+  items: MultipleFileUploadItem[];
   addFiles: (files: Iterable<File>, options?: AddFilesOptions) => string[];
   cancelAll: () => Promise<void>;
   cancelUpload: (id: string) => Promise<void>;
-  capabilities: TusCapabilities | null;
   discoverCapabilities: () => Promise<TusCapabilities>;
-  items: MultipleFileUploadItem[];
   pauseAll: () => Promise<void>;
   pauseUpload: (id: string) => Promise<void>;
   removeUpload: (id: string) => Promise<void>;

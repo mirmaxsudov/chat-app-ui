@@ -45,9 +45,9 @@ export const UserProfileDialog = ({ user }: UserProfileDialogProps) => {
   return (
     <>
       <Button
-        variant='ghost'
-        className='h-auto min-w-0 flex-1 justify-start gap-3 rounded-lg px-1 py-1 text-left'
         aria-label='Open your profile'
+        className='h-auto min-w-0 flex-1 justify-start gap-3 rounded-lg px-1 py-1 text-left'
+        variant='ghost'
         onClick={() => setOpen(true)}
       >
         <Avatar className='size-9'>
@@ -82,7 +82,7 @@ export const UserProfileDialog = ({ user }: UserProfileDialogProps) => {
               <p className='text-muted-foreground mt-0.5 truncate text-sm'>
                 {user.username ? `@${user.username}` : 'Username not set'}
               </p>
-              <Badge variant='secondary' className='mt-3'>
+              <Badge className='mt-3' variant='secondary'>
                 {accountType}
               </Badge>
             </div>
@@ -92,7 +92,7 @@ export const UserProfileDialog = ({ user }: UserProfileDialogProps) => {
 
           <dl className='flex flex-col px-6 py-2'>
             <div className='flex items-center gap-3 py-3.5'>
-              <AtSign className='text-muted-foreground size-4' aria-hidden='true' />
+              <AtSign aria-hidden='true' className='text-muted-foreground size-4' />
               <div className='min-w-0 flex-1'>
                 <dt className='text-muted-foreground text-[0.68rem]'>Username</dt>
                 <dd className='mt-0.5 truncate text-sm font-medium'>
@@ -102,7 +102,7 @@ export const UserProfileDialog = ({ user }: UserProfileDialogProps) => {
             </div>
             <Separator />
             <div className='flex items-center gap-3 py-3.5'>
-              <Phone className='text-muted-foreground size-4' aria-hidden='true' />
+              <Phone aria-hidden='true' className='text-muted-foreground size-4' />
               <div className='min-w-0 flex-1'>
                 <dt className='text-muted-foreground text-[0.68rem]'>Phone number</dt>
                 <dd className='mt-0.5 truncate text-sm font-medium'>
@@ -112,7 +112,7 @@ export const UserProfileDialog = ({ user }: UserProfileDialogProps) => {
             </div>
             <Separator />
             <div className='flex items-center gap-3 py-3.5'>
-              <ShieldCheck className='text-muted-foreground size-4' aria-hidden='true' />
+              <ShieldCheck aria-hidden='true' className='text-muted-foreground size-4' />
               <div className='min-w-0 flex-1'>
                 <dt className='text-muted-foreground text-[0.68rem]'>Account type</dt>
                 <dd className='mt-0.5 text-sm font-medium'>{accountType}</dd>

@@ -1,39 +1,39 @@
-type ChatType = 'SAVED' | 'DIRECT' | 'GROUP' | 'CHANNEL';
-type PresenceStatus = 'ONLINE' | 'OFFLINE';
+type ChatType = 'CHANNEL' | 'DIRECT' | 'GROUP' | 'SAVED';
+type PresenceStatus = 'OFFLINE' | 'ONLINE';
 
 interface UserPresence {
-  userId: string;
-  status: PresenceStatus;
-  lastSeenAt: string | null;
   changedAt: string | null;
+  lastSeenAt: string | null;
+  status: PresenceStatus;
+  userId: string;
 }
 
 interface ChatPeer {
-  id: string;
-  username: string | null;
   firstname: string | null;
+  id: string;
   lastname: string | null;
+  username: string | null;
 }
 
 interface Chat {
+  createdAt: string;
   id: string;
-  type: ChatType;
+  lastMessage: ChatLastMessage | null;
   peer: ChatPeer;
   peerPresence: UserPresence | null;
-  lastMessage: ChatLastMessage | null;
-  createdAt: string;
+  type: ChatType;
   updatedAt: string;
 }
 
 interface ChatSummary {
-  id: string;
-  name: string;
-  initials: string;
   color: string;
-  message: string;
-  time: string;
-  status: string;
-  presence: UserPresence | null;
-  username: string | null;
   createdAt: string;
+  id: string;
+  initials: string;
+  message: string;
+  name: string;
+  presence: UserPresence | null;
+  status: string;
+  time: string;
+  username: string | null;
 }

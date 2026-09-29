@@ -1,33 +1,35 @@
 import * as tus from 'tus-js-client';
+
+import type { FileUploadProgress, FileUploadResult, TusCapabilities } from './types';
+
 import { TUS_UPLOAD_CONFIG } from './file-upload.config';
 import { FileUploadError } from './file-upload.errors';
-import { TUS_VERSION, extractUploadId, parseTusCapabilities } from './file-upload.utils';
-import type { FileUploadProgress, FileUploadResult, TusCapabilities } from './types';
+import { extractUploadId, parseTusCapabilities, TUS_VERSION } from './file-upload.utils';
 
 export interface TusUploadTaskOptions {
   autoResume?: boolean;
   chunkSize?: number;
   endpoint: string;
   file: File;
-  getAccessToken: () => string | null;
   metadata?: Record<string, string>;
-  onProgress?: (progress: Pick<FileUploadProgress, 'bytesTotal' | 'bytesUploaded'>) => void;
-  onUploadUrlAvailable?: (uploadUrl: string, uploadId: string) => void;
-  onUnauthorized?: () => void;
   retryDelays?: readonly number[];
+  getAccessToken: () => string | null;
+  onProgress?: (progress: Pick<FileUploadProgress, 'bytesTotal' | 'bytesUploaded'>) => void;
+  onUnauthorized?: () => void;
+  onUploadUrlAvailable?: (uploadUrl: string, uploadId: string) => void;
 }
 
 export interface FileUploadTask {
-  cancel(): Promise<void>;
-  dispose(): Promise<void>;
-  pause(): Promise<void>;
-  resume(): void;
-  start(): Promise<FileUploadResult>;
+  cancel: () => Promise<void>;
+  dispose: () => Promise<void>;
+  pause: () => Promise<void>;
+  resume: () => void;
+  start: () => Promise<FileUploadResult>;
 }
 
 export interface FileUploadService {
-  createTask(options: TusUploadTaskOptions): FileUploadTask;
-  discoverCapabilities(endpoint: string): Promise<TusCapabilities>;
+  createTask: (options: TusUploadTaskOptions) => FileUploadTask;
+  discoverCapabilities: (endpoint: string) => Promise<TusCapabilities>;
 }
 
 const requireAccessToken = (getAccessToken: () => string | null) => {
