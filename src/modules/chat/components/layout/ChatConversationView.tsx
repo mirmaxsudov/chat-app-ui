@@ -1,3 +1,4 @@
+import { useLingui } from '@lingui/react/macro';
 import { useState } from 'react';
 
 import { RequestState } from '@/modules/chat';
@@ -44,17 +45,19 @@ export const ChatConversationView = ({
   sending,
   sendMessage
 }: ChatConversationProps) => {
-  const [showDetails, setShowDetails] = useState(false);
+  const [showDetails, setShowDetails] = useState<boolean>(false);
+
+  const { t } = useLingui();
 
   if (chatLoading || chatError || !chat) {
     return (
       <section className='flex min-h-0 flex-1 flex-col bg-[#dce8e5]'>
         <Button className='m-3 self-start' variant='ghost' onClick={onBack}>
-          Back to conversations
+          {t`Back to conversations`}
         </Button>
         <RequestState
           loading={chatLoading}
-          message={chatError ?? 'Loading chat…'}
+          message={chatError ?? t`Loading chat…`}
           onRetry={chatError ? retryChat : undefined}
         />
       </section>

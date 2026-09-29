@@ -1,11 +1,8 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
-import { chatsInfiniteQueryOptions } from '@/modules/chat';
+import { chatsInfiniteQueryOptions, requestErrorMessage, toChatSummary } from '@/modules/chat';
 import { usePresenceStore } from '@/modules/presence';
-
-import { toChatSummary } from '../helpers/chat-view';
-import { requestErrorMessage } from '../helpers/request-error';
 
 export const useConversationList = () => {
   const presenceByUserId = usePresenceStore((state) => state.byUserId);

@@ -1,12 +1,12 @@
 import { useLingui } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
-import { toast } from 'sonner';
 
-import type {LoginFormSchema} from '@/modules/auth';
+import type { LoginFormSchema } from '@/modules/auth';
 
-import {  loginFormSchema, setAuthSession } from '@/modules/auth';
+import { loginFormSchema, setAuthSession } from '@/modules/auth';
 import { useAppForm } from '@/shared/ui/form/hooks';
+import { toast } from '@/shared/ui/toast';
 import { postLogin } from '@/utils/api';
 
 export const useLoginForm = () => {
@@ -15,11 +15,16 @@ export const useLoginForm = () => {
 
   const postLoginMutation = useMutation({
     mutationFn: postLogin,
+    meta: { withoutToastOnError: true },
     onSuccess: (data) => {
       setAuthSession(data);
       void navigate({ to: '/' });
     },
-    onError: () => toast.error(t`Login failed. Please check your credentials and try again.`)
+    onError: () =>
+      toast.add({
+        title: t`Login failed. Please check your credentials and try again.`,
+        type: 'error'
+      })
   });
 
   const form = useAppForm({

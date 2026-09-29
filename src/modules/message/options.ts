@@ -1,15 +1,20 @@
 import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
 
-import type {GetChatMessagesRequest} from '@/utils/api';
+import type { GetChatMessagesRequest } from '@/utils/api';
 
 import { mergeLatestMessages, mergeMessageHistory } from '@/modules/message/helpers';
-import { getChatMessages  } from '@/utils/api';
+import { getChatMessages } from '@/utils/api';
 
 export const MESSAGE_QUERY_OPTIONS = {
   all: ['messages'] as const,
   byChat: (chatId: string) => [...MESSAGE_QUERY_OPTIONS.all, 'chat', chatId] as const,
   history: (request: GetChatMessagesRequest) =>
-    [...MESSAGE_QUERY_OPTIONS.byChat(request.chatId), 'history', request] as const,
+    [
+      ...MESSAGE_QUERY_OPTIONS.all,
+      ...MESSAGE_QUERY_OPTIONS.byChat(request.chatId),
+      'history',
+      request
+    ] as const,
   infiniteHistory: (chatId: string, size: number) =>
     [...MESSAGE_QUERY_OPTIONS.byChat(chatId), 'infinite', { size }] as const
 } as const;

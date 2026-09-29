@@ -1,25 +1,29 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
-import { chatByIdQueryOptions } from '@/modules/chat';
+import {
+  applyMessageToCache,
+  chatByIdQueryOptions,
+  chronologicalMessages,
+  requestErrorMessage,
+  toChatSummary
+} from '@/modules/chat';
 import { chatMessagesInfiniteQueryOptions } from '@/modules/message';
 import { usePresenceStore } from '@/modules/presence';
 import { postSendMessage } from '@/utils/api';
-
-import { applyMessageToCache } from '../helpers/chat-cache';
-import { chronologicalMessages, toChatSummary } from '../helpers/chat-view';
-import { requestErrorMessage } from '../helpers/request-error';
 
 export const useChatConversation = (chatId: string) => {
   const presenceByUserId = usePresenceStore((state) => state.byUserId);
   const queryClient = useQueryClient();
   const chat = useQuery({ ...chatByIdQueryOptions(chatId), meta: { withoutToastOnError: true } });
   const historyOptions = chatMessagesInfiniteQueryOptions({ chatId });
+
   const history = useInfiniteQuery({
     ...historyOptions,
     enabled: chat.isSuccess,
     meta: { withoutToastOnError: true }
   });
+
   const messages = useMemo(() => chronologicalMessages(history.data?.pages ?? []), [history.data]);
 
   const send = useMutation({

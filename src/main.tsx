@@ -7,9 +7,9 @@ import { createRouter, RouterProvider } from '@tanstack/react-router';
 import { isAxiosError } from 'axios';
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
-import { toast } from 'sonner';
 
 import { clearAuthSession, getAccessToken } from '@/modules/auth';
+import { toast } from '@/shared/ui/toast';
 import { setAccessTokenGetter, setUnauthorizedHandler } from '@/utils/api';
 
 import { routeTree } from './routeTree.gen';
@@ -38,16 +38,16 @@ const queryClient = new QueryClient({
     onError: (error, query) => {
       if (query.meta?.withoutToastOnError) return;
       if (query.meta?.customErrorMessage) {
-        toast.error(query.meta?.customErrorMessage);
+        toast.add({ title: query.meta.customErrorMessage, type: 'error' });
         return;
       }
-      toast.error(getErrorMessage(error, 'Something went wrong!'));
+      toast.add({ title: getErrorMessage(error, 'Something went wrong!'), type: 'error' });
     }
   }),
   mutationCache: new MutationCache({
     onError: (error, _variables, _context, mutation) => {
       if (mutation.meta?.withoutToastOnError) return;
-      toast.error(getErrorMessage(error, 'Something went wrong!'));
+      toast.add({ title: getErrorMessage(error, 'Something went wrong!'), type: 'error' });
     },
     onSuccess: (_data, _variables, _context, mutation) => {
       if (mutation.meta?.invalidatesQuery) {
