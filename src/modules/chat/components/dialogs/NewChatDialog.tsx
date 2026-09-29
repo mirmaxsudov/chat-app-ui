@@ -1,16 +1,19 @@
-import { type FormEvent, useState } from 'react';
+import type {FormEvent} from 'react';
+
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Button } from '@/shared/ui/button';
-import { Input } from '@/shared/ui/input';
+import {  useState } from 'react';
+
+import { CHAT_QUERY_OPTIONS, chatByIdQueryOptions, requestErrorMessage } from '@/modules/chat';
+import { Button } from '@/shared/ui/button.tsx';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle
-} from '@/shared/ui/dialog';
+} from '@/shared/ui/dialog.tsx';
+import { Input } from '@/shared/ui/input.tsx';
 import { postDMChat, postSavedChat } from '@/utils/api';
-import { CHAT_QUERY_OPTIONS, chatByIdQueryOptions, requestErrorMessage } from '@/modules/chat';
 
 export const NewChatDialog = ({
   onClose,
@@ -22,7 +25,7 @@ export const NewChatDialog = ({
   const queryClient = useQueryClient();
   const [username, setUsername] = useState('');
   const createChat = useMutation({
-    mutationFn: (input: { kind: 'saved' } | { kind: 'direct'; username: string }) =>
+    mutationFn: (input: { kind: 'direct'; username: string } | { kind: 'saved' }) =>
       input.kind === 'saved' ? postSavedChat() : postDMChat({ data: { username: input.username } }),
     retry: false,
     meta: { withoutToastOnError: true },
@@ -54,39 +57,39 @@ export const NewChatDialog = ({
             Enter an exact username, or open your personal Saved Messages.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className='space-y-3'>
-          <label htmlFor='chat-username' className='block text-sm font-medium'>
+        <form className='space-y-3' onSubmit={submit}>
+          <label className='block text-sm font-medium' htmlFor='chat-username'>
             Username
           </label>
           <Input
-            id='chat-username'
-            value={username}
-            maxLength={64}
             required
-            autoComplete='off'
-            disabled={createChat.isPending}
             aria-describedby={createChat.isError ? 'create-chat-error' : undefined}
+            autoComplete='off'
             className='h-10'
+            disabled={createChat.isPending}
+            id='chat-username'
+            maxLength={64}
             placeholder='@username'
+            value={username}
             onChange={(event) => setUsername(event.target.value)}
           />
           {createChat.isError && (
-            <p id='create-chat-error' role='alert' className='text-destructive text-xs'>
+            <p className='text-destructive text-xs' id='create-chat-error' role='alert'>
               {requestErrorMessage()}
             </p>
           )}
           <Button
-            type='submit'
-            disabled={createChat.isPending || !username.trim()}
             className='h-10 w-full bg-[#168acd] text-white'
+            disabled={createChat.isPending || !username.trim()}
+            type='submit'
           >
             {createChat.isPending ? 'Opening…' : 'Open chat'}
           </Button>
           <Button
+            className='h-10 w-full'
+            disabled={createChat.isPending}
             type='button'
             variant='outline'
-            disabled={createChat.isPending}
-            className='h-10 w-full'
             onClick={() => createChat.mutate({ kind: 'saved' })}
           >
             Saved Messages

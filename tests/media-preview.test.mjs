@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
-import { after, test } from 'node:test';
 import { resolve } from 'node:path';
 import { createServer } from 'vite';
+import { after, it } from 'vitest';
 
 const server = await createServer({
   configFile: false,
@@ -12,7 +12,7 @@ const server = await createServer({
 
 after(() => server.close());
 
-test('original image queue deduplicates URLs, waits for decode, and limits concurrency', async () => {
+it('original image queue deduplicates URLs, waits for decode, and limits concurrency', async () => {
   const originalImage = globalThis.Image;
   const instances = [];
   class ControlledImage {
@@ -74,7 +74,7 @@ test('original image queue deduplicates URLs, waits for decode, and limits concu
   }
 });
 
-test('viewport observation pools elements by root margin and cleans up the shared observer', async () => {
+it('viewport observation pools elements by root margin and cleans up the shared observer', async () => {
   const originalObserver = globalThis.IntersectionObserver;
   const instances = [];
   class ObserverStub {

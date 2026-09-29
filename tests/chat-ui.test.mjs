@@ -1,10 +1,9 @@
-import assert from 'node:assert/strict';
-import { test } from 'node:test';
-import { resolve } from 'node:path';
 import { JSDOM } from 'jsdom';
+import assert from 'node:assert/strict';
+import { resolve } from 'node:path';
 import { createServer } from 'vite';
 
-test('chat UI loads API data, keeps failed drafts, and displays only confirmed sends', async (t) => {
+it('chat UI loads API data, keeps failed drafts, and displays only confirmed sends', async (t) => {
   const dom = new JSDOM('<div id="root"></div>', {
     url: 'http://localhost/',
     pretendToBeVisual: true
@@ -199,7 +198,7 @@ test('chat UI loads API data, keeps failed drafts, and displays only confirmed s
       messages.push(sent);
       chat.lastMessage = sent;
       data = { success: true, data: sent };
-    } else throw new Error('Unexpected API call: ' + config.url);
+    } else throw new Error(`Unexpected API call: ${  config.url}`);
     return { data, config, headers: {}, status: 200, statusText: 'OK' };
   };
   const waitFor = async (predicate) => {
@@ -209,7 +208,7 @@ test('chat UI loads API data, keeps failed drafts, and displays only confirmed s
         await new Promise((done) => setTimeout(done, 20));
       });
     }
-    assert.fail('UI did not reach expected state: ' + document.body.textContent);
+    assert.fail(`UI did not reach expected state: ${  document.body.textContent}`);
   };
   try {
     await act(async () =>

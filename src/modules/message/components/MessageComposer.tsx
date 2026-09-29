@@ -1,17 +1,21 @@
-import { type FormEvent, useRef, useState } from 'react';
+import type {FormEvent} from 'react';
+
 import { FileArchive, FileImage, LoaderCircle, Paperclip, RotateCcw, Send, X } from 'lucide-react';
+import {  useRef, useState } from 'react';
+
 import type { MultipleFileUploadItem } from '@/shared/hooks/use-multiple-file-upload';
-import { useMultipleFileUpload } from '@/shared/hooks/use-multiple-file-upload';
-import { Button } from '@/shared/ui/button';
-import { InputGroup, InputGroupTextarea } from '@/shared/ui/input-group';
-import { cn } from '@/shared/lib/utils';
+
 import { getAccessToken } from '@/modules/auth';
+import { useMultipleFileUpload } from '@/shared/hooks/use-multiple-file-upload';
+import { cn } from '@/shared/lib/utils.ts';
+import { Button } from '@/shared/ui/button.tsx';
+import { InputGroup, InputGroupTextarea } from '@/shared/ui/input-group.tsx';
 
 interface MessageComposerProps {
-  onSend: (message: string, attachments: string[]) => Promise<boolean>;
-  isSending: boolean;
   disabled?: boolean;
   error?: string;
+  isSending: boolean;
+  onSend: (message: string, attachments: string[]) => Promise<boolean>;
 }
 
 const FILE_UPLOAD_OPTIONS = { autoStart: false, getAccessToken };
@@ -35,15 +39,15 @@ const uploadStateLabel = (item: MultipleFileUploadItem) => {
 
 const CircularProgress = ({ value }: { value: number }) => (
   <span
-    role='progressbar'
-    aria-label='Uploading attachment'
-    aria-valuemin={0}
-    aria-valuemax={100}
-    aria-valuenow={Math.round(value)}
-    className='relative grid size-11 place-items-center rounded-full bg-[#172a26]/65 text-[0.62rem] font-bold text-white shadow-lg backdrop-blur-sm'
     style={{
       background: `conic-gradient(#fff ${Math.max(value, 4) * 3.6}deg, rgba(20,39,35,.58) 0)`
     }}
+    aria-label='Uploading attachment'
+    aria-valuemax={100}
+    aria-valuemin={0}
+    aria-valuenow={Math.round(value)}
+    className='relative grid size-11 place-items-center rounded-full bg-[#172a26]/65 text-[0.62rem] font-bold text-white shadow-lg backdrop-blur-sm'
+    role='progressbar'
   >
     <span className='grid size-9 place-items-center rounded-full bg-[#263d38]/90'>
       {Math.round(value)}
@@ -66,7 +70,7 @@ const UploadPreview = ({
     item.file.type.startsWith('image/') ? URL.createObjectURL(item.file) : null
   );
 
-  const busy = ['queued', 'validating', 'uploading'].includes(item.status);
+  const busy = ['queued', 'uploading', 'validating'].includes(item.status);
   const problem = item.status === 'error' || (item.status === 'success' && !item.attachmentId);
 
   return (
@@ -77,7 +81,7 @@ const UploadPreview = ({
       )}
     >
       {previewUrl ? (
-        <img src={previewUrl} alt={item.file.name} className='size-full object-cover' />
+        <img alt={item.file.name} className='size-full object-cover' src={previewUrl} />
       ) : (
         <div className='flex size-full flex-col items-center justify-center gap-1.5 px-2 text-[#4f6660]'>
           <FileArchive className='size-7' />
@@ -93,24 +97,24 @@ const UploadPreview = ({
       )}
       {problem && (
         <button
+          aria-label={`Retry upload for ${item.file.name}`}
+          className='absolute inset-0 flex flex-col items-center justify-center gap-1 bg-[#5b2929]/70 text-[0.62rem] font-semibold text-white backdrop-blur-[2px] disabled:opacity-50'
+          disabled={disabled}
           type='button'
           onClick={onRetry}
-          disabled={disabled}
-          className='absolute inset-0 flex flex-col items-center justify-center gap-1 bg-[#5b2929]/70 text-[0.62rem] font-semibold text-white backdrop-blur-[2px] disabled:opacity-50'
-          aria-label={`Retry upload for ${item.file.name}`}
         >
           <RotateCcw className='size-5' />
           Retry
         </button>
       )}
       <Button
-        type='button'
-        size='icon-xs'
-        variant='secondary'
-        disabled={disabled}
-        onClick={onRemove}
         aria-label={`Remove ${item.file.name}`}
         className='absolute top-1 right-1 z-10 size-6 rounded-full border border-white/70 bg-[#203530]/75 text-white opacity-100 shadow-md backdrop-blur-sm hover:bg-[#172723] sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100'
+        disabled={disabled}
+        size='icon-xs'
+        type='button'
+        variant='secondary'
+        onClick={onRemove}
       >
         <X className='size-3.5' />
       </Button>
@@ -179,12 +183,12 @@ export const MessageComposer = ({ onSend, isSending, disabled, error }: MessageC
       onSubmit={handleSubmit}
     >
       <input
-        ref={fileInput}
-        type='file'
         multiple
-        className='sr-only'
+        ref={fileInput}
         aria-label='Choose attachments'
+        className='sr-only'
         disabled={disabled || busy}
+        type='file'
         onChange={(event) => {
           if (event.target.files?.length) {
             setUploadError(undefined);
@@ -196,14 +200,14 @@ export const MessageComposer = ({ onSend, isSending, disabled, error }: MessageC
 
       {hasFiles && (
         <div
-          className='mb-2 flex scrollbar-none gap-2 overflow-x-auto rounded-2xl bg-[#f1f5f4] p-2'
           aria-label='Selected attachments'
+          className='mb-2 flex scrollbar-none gap-2 overflow-x-auto rounded-2xl bg-[#f1f5f4] p-2'
         >
           {uploader.items.map((item) => (
             <UploadPreview
               key={item.id}
-              item={item}
               disabled={Boolean(disabled || busy)}
+              item={item}
               onRemove={() => {
                 setUploadError(undefined);
                 void uploader.removeUpload(item.id);
@@ -222,32 +226,32 @@ export const MessageComposer = ({ onSend, isSending, disabled, error }: MessageC
       )}
 
       {(error || uploadError) && (
-        <p role='alert' id='send-error' className='text-destructive mb-2 text-xs'>
+        <p className='text-destructive mb-2 text-xs' id='send-error' role='alert'>
           {uploadError ?? error}
         </p>
       )}
       <div className='flex items-end gap-2'>
         <Button
-          type='button'
-          size='icon-lg'
-          variant='ghost'
-          disabled={disabled || busy}
-          onClick={() => fileInput.current?.click()}
-          className='size-10 shrink-0 rounded-full text-[#60756f] hover:bg-[#e7efed] hover:text-[#168acd]'
           aria-label='Attach files'
+          className='size-10 shrink-0 rounded-full text-[#60756f] hover:bg-[#e7efed] hover:text-[#168acd]'
+          disabled={disabled || busy}
+          size='icon-lg'
+          type='button'
+          variant='ghost'
+          onClick={() => fileInput.current?.click()}
         >
           {hasFiles ? <FileImage className='size-5' /> : <Paperclip className='size-5' />}
         </Button>
         <InputGroup className='min-h-10 flex-1 rounded-2xl border-0 bg-[#f1f5f7] px-2 shadow-none'>
           <InputGroupTextarea
-            value={message}
-            placeholder={hasFiles ? 'Add a caption…' : 'Write a message…'}
-            aria-label='Message'
             aria-describedby={error || uploadError ? 'send-error' : undefined}
+            aria-label='Message'
             className='max-h-32 min-h-10 py-2 text-sm'
-            rows={1}
-            maxLength={4096}
             disabled={disabled || busy}
+            maxLength={4096}
+            placeholder={hasFiles ? 'Add a caption…' : 'Write a message…'}
+            rows={1}
+            value={message}
             onChange={(event) => setMessage(event.target.value)}
             onKeyDown={(event) => {
               if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
@@ -258,11 +262,11 @@ export const MessageComposer = ({ onSend, isSending, disabled, error }: MessageC
           />
         </InputGroup>
         <Button
-          type='submit'
-          size='icon-lg'
-          disabled={!canSend}
-          className='size-10 rounded-full bg-[#168acd] text-white hover:bg-[#087dbc]'
           aria-label={busy ? 'Sending message' : 'Send message'}
+          className='size-10 rounded-full bg-[#168acd] text-white hover:bg-[#087dbc]'
+          disabled={!canSend}
+          size='icon-lg'
+          type='submit'
         >
           {busy ? <LoaderCircle className='size-5 animate-spin' /> : <Send className='size-5' />}
         </Button>

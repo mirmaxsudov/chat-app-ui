@@ -1,4 +1,7 @@
-import { type InfiniteData, type QueryClient, replaceEqualDeep } from '@tanstack/react-query';
+import type {InfiniteData, QueryClient} from '@tanstack/react-query';
+
+import {   replaceEqualDeep } from '@tanstack/react-query';
+
 import { insertConfirmedMessages, mergeConfirmedMessage } from '@/modules/message';
 
 export const withLastMessage = (chat: Chat, message: ChatMessage): Chat => {

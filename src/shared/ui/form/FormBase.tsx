@@ -27,7 +27,7 @@ export const FormBase = ({
   const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
   const labelElement = (
     <>
-      <FieldLabel isRequired={isRequired} htmlFor={field.name}>
+      <FieldLabel htmlFor={field.name} isRequired={isRequired}>
         {label}
       </FieldLabel>
       {description && <FieldDescription>{description}</FieldDescription>}

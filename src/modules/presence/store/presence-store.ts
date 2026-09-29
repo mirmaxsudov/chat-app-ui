@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type RealtimeConnectionStatus = 'connecting' | 'connected' | 'reconnecting';
+export type RealtimeConnectionStatus = 'connected' | 'connecting' | 'reconnecting';
 export type PresenceState = Record<string, UserPresence>;
 
 export const isPresenceNewerOrEqual = (

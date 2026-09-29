@@ -1,6 +1,6 @@
+import { cn } from '@/shared/lib/utils.ts';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
-import { cn } from '@/shared/lib/utils.ts';
 
 interface DataTableSkeletonProps extends React.ComponentProps<'div'> {
   cellWidths?: string[];

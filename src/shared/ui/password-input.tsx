@@ -1,13 +1,13 @@
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import * as React from 'react';
 
+import { cn } from '@/shared/lib/utils';
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
   InputGroupInput
 } from '@/shared/ui/input-group';
-import { cn } from '@/shared/lib/utils';
 
 type PasswordInputProps = Omit<React.ComponentProps<typeof InputGroupInput>, 'type'> & {
   inputClassName?: string;
@@ -26,9 +26,9 @@ const PasswordInput = ({
     <InputGroup className={className} data-disabled={disabled}>
       <InputGroupInput
         ref={ref}
+        className={cn('h-full px-4', inputClassName)}
         disabled={disabled}
         type={showPassword ? 'text' : 'password'}
-        className={cn('h-full px-4', inputClassName)}
         {...props}
       />
       <InputGroupAddon align='inline-end'>

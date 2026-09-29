@@ -1,22 +1,21 @@
-export { FileUploadError } from './file-upload.errors';
 export {
-  TUS_UPLOAD_CONFIG,
   parseRetryIntervals,
-  resolveTusUploadConfig
+  resolveTusUploadConfig,
+  TUS_UPLOAD_CONFIG
 } from './file-upload.config';
 export type { TusUploadConfig } from './file-upload.config';
+export { FileUploadError } from './file-upload.errors';
 export {
+  calculateProgress,
   DEFAULT_CHUNK_SIZE,
   DEFAULT_RETRY_DELAYS,
-  TUS_VERSION,
-  calculateProgress,
   extractUploadId,
   parseTusCapabilities,
   resolveUploadEndpoint,
+  TUS_VERSION,
   validateFile
 } from './file-upload.utils';
 export { TusFileUploadService } from './tus-upload.service';
-export { useFileUpload } from './use-file-upload';
 export type { FileUploadService, FileUploadTask, TusUploadTaskOptions } from './tus-upload.service';
 export type {
   FileUploadProgress,
@@ -27,3 +26,4 @@ export type {
   UseFileUploadOptions,
   UseFileUploadResult
 } from './types';
+export { useFileUpload } from './use-file-upload';

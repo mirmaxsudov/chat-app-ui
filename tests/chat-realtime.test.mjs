@@ -1,9 +1,9 @@
+import { QueryClient } from '@tanstack/react-query';
 import assert from 'node:assert/strict';
-import { after, test } from 'node:test';
 import { resolve } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import { createServer } from 'vite';
-import { QueryClient } from '@tanstack/react-query';
+import { after, it } from 'vitest';
 
 // Transport and STOMP are isolated; no real credentials, sockets or account mutations.
 const server = await createServer({
@@ -15,7 +15,7 @@ const server = await createServer({
 
 after(() => server.close());
 
-const load = (path) => server.ssrLoadModule('/src/' + path);
+const load = (path) => server.ssrLoadModule(`/src/${  path}`);
 const { parseMessageEvent, parsePresenceEvent } = await load('features/chat/realtime/event.ts');
 const { startMessageConnection, resolveSockJsUrl } = await load(
   'features/chat/realtime/connection.ts'
@@ -117,7 +117,7 @@ const eventually = async (predicate) => {
   assert.fail('Timed out waiting for isolated async work');
 };
 
-test('validates UUIDs, safe sequences and local dates; ignores malformed/future events', () => {
+it('validates UUIDs, safe sequences and local dates; ignores malformed/future events', () => {
   assert.deepEqual(parseMessageEvent(JSON.stringify(event(42))), event(42));
   for (const body of [
     '{',
@@ -131,7 +131,7 @@ test('validates UUIDs, safe sequences and local dates; ignores malformed/future 
     assert.equal(parseMessageEvent(body), null);
 });
 
-test('preserves attachment metadata from realtime message events', () => {
+it('preserves attachment metadata from realtime message events', () => {
   const withAttachment = event(43);
   withAttachment.message.attachments = [
     {
@@ -158,7 +158,7 @@ test('preserves attachment metadata from realtime message events', () => {
   assert.deepEqual(parseMessageEvent(JSON.stringify(withAttachment)), withAttachment);
 });
 
-test('validates presence events and orders normalized state by changedAt', () => {
+it('validates presence events and orders normalized state by changedAt', () => {
   const online = presence('ONLINE', '2026-09-18T10:16:00Z');
   assert.deepEqual(parsePresenceEvent(JSON.stringify(online)), online);
   assert.equal(parsePresenceEvent(JSON.stringify({ ...online, status: 'AWAY' })), null);
@@ -176,7 +176,7 @@ test('validates presence events and orders normalized state by changedAt', () =>
   );
 });
 
-test('SockJS URL uses the API origin, supports an explicit proxy path and rejects ws://', () => {
+it('SockJS URL uses the API origin, supports an explicit proxy path and rejects ws://', () => {
   assert.equal(
     resolveSockJsUrl('https://api.example.com/api/v1', undefined, 'https://app.example.com'),
     'https://api.example.com/ws'
@@ -192,7 +192,7 @@ test('SockJS URL uses the API origin, supports an explicit proxy path and reject
   assert.throws(() => resolveSockJsUrl(undefined, 'ws://localhost/ws', 'http://localhost'), /HTTP/);
 });
 
-test('REST/queue duplicates are idempotent and late snapshots preserve live and older history', async () => {
+it('REST/queue duplicates are idempotent and late snapshots preserve live and older history', async () => {
   const queryClient = client();
   try {
     const options = seedHistory(queryClient, [3, 2, 1], 2);
@@ -211,7 +211,7 @@ test('REST/queue duplicates are idempotent and late snapshots preserve live and 
   }
 });
 
-test('previews do not regress and an event moves its chat across loaded page boundaries', () => {
+it('previews do not regress and an event moves its chat across loaded page boundaries', () => {
   const queryClient = client();
   try {
     const options = chatsInfiniteQueryOptions();
@@ -238,7 +238,7 @@ test('previews do not regress and an event moves its chat across loaded page bou
   }
 });
 
-test('only latest single-page queries receive events, not beforeSeq snapshots', async () => {
+it('only latest single-page queries receive events, not beforeSeq snapshots', async () => {
   const queryClient = client();
   try {
     const latest = chatMessagesQueryOptions({ chatId, size: 2 });
@@ -263,7 +263,7 @@ test('only latest single-page queries receive events, not beforeSeq snapshots', 
   }
 });
 
-test('reconnect recovery walks more than one page and preserves events arriving during recovery', async () => {
+it('reconnect recovery walks more than one page and preserves events arriving during recovery', async () => {
   const queryClient = client();
   const options = seedHistory(queryClient, [2, 1]);
   const sync = createChatSynchronizer(queryClient, () => true);
@@ -294,7 +294,7 @@ test('reconnect recovery walks more than one page and preserves events arriving 
   }
 });
 
-test('events update the existing query cache in batches without HTTP per message', async () => {
+it('events update the existing query cache in batches without HTTP per message', async () => {
   const queryClient = client();
   const options = seedHistory(queryClient, [1]);
   queryClient.setQueryData(chatByIdQueryOptions(chatId).queryKey, chat());
@@ -326,7 +326,7 @@ test('events update the existing query cache in batches without HTTP per message
   }
 });
 
-test('sequence gaps trigger targeted recovery, and unknown chats coalesce metadata lookup', async () => {
+it('sequence gaps trigger targeted recovery, and unknown chats coalesce metadata lookup', async () => {
   const queryClient = client();
   const options = seedHistory(queryClient, [2, 1]);
   const sync = createChatSynchronizer(queryClient, () => true);
@@ -352,7 +352,7 @@ test('sequence gaps trigger targeted recovery, and unknown chats coalesce metada
   }
 });
 
-test('an initial HTTP snapshot arriving after a much newer event recovers the intervening gap', async () => {
+it('an initial HTTP snapshot arriving after a much newer event recovers the intervening gap', async () => {
   const queryClient = client();
   const options = chatMessagesInfiniteQueryOptions({ chatId });
   const sync = createChatSynchronizer(queryClient, () => true);
@@ -387,10 +387,10 @@ test('an initial HTTP snapshot arriving after a much newer event recovers the in
   }
 });
 
-test('recovery is concurrency-limited and disposal prevents late writes', async () => {
+it('recovery is concurrency-limited and disposal prevents late writes', async () => {
   const queryClient = client();
   const releases = [];
-  for (let id = 0; id < 5; id++) seedHistory(queryClient, [1], 50, 'chat-' + id);
+  for (let id = 0; id < 5; id++) seedHistory(queryClient, [1], 50, `chat-${  id}`);
   const sync = createChatSynchronizer(queryClient, () => true);
   transport(() => new Promise((resolve) => releases.push(() => resolve(envelope(page([2, 1]))))));
   sync.reconcile();
@@ -463,7 +463,7 @@ const fakeConnection = (overrides = {}) => {
   };
 };
 
-test('CONNECT subscribes to messages and presence before reconciliation on every connection', () => {
+it('CONNECT subscribes to messages and presence before reconciliation on every connection', () => {
   const connection = fakeConnection();
   try {
     assert.deepEqual(connection.fake.connectHeaders, { Authorization: 'Bearer test-only' });
@@ -502,7 +502,7 @@ test('CONNECT subscribes to messages and presence before reconciliation on every
   }
 });
 
-test('REST presence snapshots cannot overwrite a newer queue event', async () => {
+it('REST presence snapshots cannot overwrite a newer queue event', async () => {
   const queryClient = client();
   usePresenceStore.getState().reset();
   const sync = createChatSynchronizer(queryClient, () => true);
@@ -521,7 +521,7 @@ test('REST presence snapshots cannot overwrite a newer queue event', async () =>
   }
 });
 
-test('invalid/changed sessions stop reconnects; broker errors do not invalidate a valid login', async () => {
+it('invalid/changed sessions stop reconnects; broker errors do not invalidate a valid login', async () => {
   const connection = fakeConnection();
   try {
     connection.config.onStompError({});
@@ -544,7 +544,7 @@ test('invalid/changed sessions stop reconnects; broker errors do not invalidate 
   }
 });
 
-test('bulk cache writes preserve stable ordering without manufacturing unread/presence fields', () => {
+it('bulk cache writes preserve stable ordering without manufacturing unread/presence fields', () => {
   const queryClient = client();
   try {
     const options = seedHistory(queryClient, [1]);

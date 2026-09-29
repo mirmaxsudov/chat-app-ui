@@ -1,10 +1,10 @@
-type Role = 'USER' | 'ADMIN';
+type Role = 'ADMIN' | 'USER';
 
 interface CurrentUser {
-  id: string;
-  phoneNumber: string;
-  username: string | null;
   firstname: string | null;
+  id: string;
   lastname: string | null;
+  phoneNumber: string;
   roles: Role[];
+  username: string | null;
 }

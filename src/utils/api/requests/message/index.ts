@@ -1,8 +1,8 @@
 import { apiClient } from '@/utils/api';
 
 export interface GetChatMessagesRequest {
-  chatId: string;
   beforeSeq?: number;
+  chatId: string;
   size?: number;
 }
 

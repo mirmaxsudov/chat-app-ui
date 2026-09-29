@@ -1,21 +1,22 @@
-import {
-  FileUploadError,
-  TusFileUploadService,
-  calculateProgress,
-  validateFile
-} from '../use-file-upload';
 import type { FileUploadService, FileUploadTask, TusCapabilities } from '../use-file-upload';
-import {
-  calculateMultipleUploadSummary,
-  getFileIdentity,
-  normalizeUploadConcurrency
-} from './multiple-file-upload.utils';
 import type {
   AddFilesOptions,
   MultipleFileUploadItem,
   MultipleFileUploadSummary,
   UseMultipleFileUploadOptions
 } from './types';
+
+import {
+  calculateProgress,
+  FileUploadError,
+  TusFileUploadService,
+  validateFile
+} from '../use-file-upload';
+import {
+  calculateMultipleUploadSummary,
+  getFileIdentity,
+  normalizeUploadConcurrency
+} from './multiple-file-upload.utils';
 
 interface ResolvedControllerOptions extends UseMultipleFileUploadOptions {
   endpoint: string;
@@ -96,7 +97,7 @@ export class MultipleFileUploadController {
     const ids: string[] = [];
     const existingIdentities = new Map(
       [...this.items.values()]
-        .filter((item) => !['success', 'error', 'cancelled'].includes(item.status))
+        .filter((item) => !['cancelled', 'error', 'success'].includes(item.status))
         .map((item) => [getFileIdentity(item.file), item.id])
     );
 
@@ -219,7 +220,7 @@ export class MultipleFileUploadController {
 
   async cancelUpload(id: string) {
     const item = this.items.get(id);
-    if (!item || ['success', 'cancelled'].includes(item.status)) return;
+    if (!item || ['cancelled', 'success'].includes(item.status)) return;
     const task = item.task;
     item.runId += 1;
     item.status = 'cancelled';
@@ -385,7 +386,7 @@ export class MultipleFileUploadController {
     return (
       this.items.size === 0 ||
       [...this.items.values()].every((item) =>
-        ['success', 'error', 'cancelled'].includes(item.status)
+        ['cancelled', 'error', 'success'].includes(item.status)
       )
     );
   }

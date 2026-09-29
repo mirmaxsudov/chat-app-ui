@@ -1,4 +1,5 @@
 import { useState } from 'react';
+
 import {
   ChatConversationContainer,
   ChatLayoutView,
@@ -22,15 +23,15 @@ export const ChatPage = ({ activeChatId, onBack, onSelectChat }: ChatPageProps) 
     <>
       <ChatLayoutView
         {...conversationList}
-        connectionStatus={connectionStatus}
-        activeChatId={activeChatId}
-        onNewChat={() => setCreatingChat(true)}
-        onSelectChat={onSelectChat}
         conversation={
           activeChatId ? (
             <ChatConversationContainer key={activeChatId} chatId={activeChatId} onBack={onBack} />
           ) : undefined
         }
+        activeChatId={activeChatId}
+        connectionStatus={connectionStatus}
+        onNewChat={() => setCreatingChat(true)}
+        onSelectChat={onSelectChat}
       />
       {creatingChat && (
         <NewChatDialog

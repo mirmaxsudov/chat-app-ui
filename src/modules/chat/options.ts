@@ -1,6 +1,9 @@
 import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
-import { getChatById, getChats, type GetChatsRequest } from '@/utils/api';
+
+import type {GetChatsRequest} from '@/utils/api';
+
 import { mergeChat, mergeChatList, mergeInfiniteChatList } from '@/modules/chat';
+import { getChatById, getChats  } from '@/utils/api';
 
 const normalizeListParams = ({ page = 0, size = 20 }: GetChatsRequest = {}) => ({ page, size });
 

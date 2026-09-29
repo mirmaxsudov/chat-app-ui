@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FileUploadError } from './file-upload.errors';
-import { calculateProgress, resolveUploadEndpoint, validateFile } from './file-upload.utils';
+
 import type { FileUploadTask } from './tus-upload.service';
-import { TusFileUploadService } from './tus-upload.service';
 import type {
   FileUploadProgress,
   FileUploadResult,
@@ -12,6 +10,10 @@ import type {
   UseFileUploadOptions,
   UseFileUploadResult
 } from './types';
+
+import { FileUploadError } from './file-upload.errors';
+import { calculateProgress, resolveUploadEndpoint, validateFile } from './file-upload.utils';
+import { TusFileUploadService } from './tus-upload.service';
 
 const EMPTY_PROGRESS: FileUploadProgress = {
   bytesPerSecond: 0,

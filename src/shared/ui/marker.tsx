@@ -1,7 +1,9 @@
-import * as React from 'react';
+import type {VariantProps} from 'class-variance-authority';
+
 import { mergeProps } from '@base-ui/react/merge-props';
 import { useRender } from '@base-ui/react/use-render';
-import { cva, type VariantProps } from 'class-variance-authority';
+import { cva  } from 'class-variance-authority';
+import * as React from 'react';
 
 import { cn } from '@/shared/lib/utils.ts';
 
@@ -41,28 +43,24 @@ function Marker({
   });
 }
 
-function MarkerIcon({ className, ...props }: React.ComponentProps<'span'>) {
-  return (
+const MarkerIcon = ({ className, ...props }: React.ComponentProps<'span'>) => (
     <span
-      data-slot='marker-icon'
       aria-hidden='true'
       className={cn("size-3.5 shrink-0 [&_svg:not([class*='size-'])]:size-3.5", className)}
+      data-slot='marker-icon'
       {...props}
     />
-  );
-}
+  )
 
-function MarkerContent({ className, ...props }: React.ComponentProps<'span'>) {
-  return (
+const MarkerContent = ({ className, ...props }: React.ComponentProps<'span'>) => (
     <span
-      data-slot='marker-content'
       className={cn(
         '*:[a]:hover:text-foreground min-w-0 wrap-break-word group-data-[variant=separator]/marker:flex-none group-data-[variant=separator]/marker:text-center *:[a]:underline *:[a]:underline-offset-3',
         className
       )}
+      data-slot='marker-content'
       {...props}
     />
-  );
-}
+  )
 
-export { Marker, MarkerIcon, MarkerContent, markerVariants };
+export { Marker, MarkerContent, MarkerIcon, markerVariants };

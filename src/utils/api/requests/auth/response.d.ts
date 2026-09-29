@@ -1,7 +1,7 @@
 interface LoginResponsePreview {
   accessToken: string;
-  tokenType: 'Bearer';
   expiresAt: string;
+  tokenType: 'Bearer';
 }
 
 type LoginResponse = ApiResponse<LoginResponsePreview>;

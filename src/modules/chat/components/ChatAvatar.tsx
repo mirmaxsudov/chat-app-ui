@@ -1,8 +1,8 @@
-import { Avatar, AvatarFallback } from '@/shared/ui/avatar';
 import { cn } from '@/shared/lib/utils';
+import { Avatar, AvatarFallback } from '@/shared/ui/avatar';
 
 interface ChatAvatarProps {
-  chat: Pick<ChatSummary, 'initials' | 'color' | 'presence'>;
+  chat: Pick<ChatSummary, 'color' | 'initials' | 'presence'>;
   className?: string;
 }
 

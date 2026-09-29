@@ -1,5 +1,6 @@
 import { useLingui } from '@lingui/react';
 import { useNavigate, useRouter } from '@tanstack/react-router';
+
 import { Button } from '@/shared/ui/button';
 
 export const NotFoundError = () => {

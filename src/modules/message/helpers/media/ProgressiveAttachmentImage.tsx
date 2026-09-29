@@ -1,5 +1,9 @@
-import { type CSSProperties, type ReactNode, useEffect } from 'react';
+import type {CSSProperties, ReactNode} from 'react';
+
+import {   useEffect } from 'react';
+
 import { cn } from '@/shared/lib/utils';
+
 import { useProgressiveImage } from './use-progressive-image';
 
 interface ProgressiveAttachmentImageProps {
@@ -7,12 +11,12 @@ interface ProgressiveAttachmentImageProps {
   className?: string;
   fallback?: ReactNode;
   originalUrl: string;
+  pendingKey?: string;
   previewHeight?: number | null;
   previewStatus?: PreviewStatus;
   previewUrl: string | null;
   previewWidth?: number | null;
   rootMargin?: string;
-  pendingKey?: string;
   onPendingVisibilityChange?: (key: string, visible: boolean) => void;
 }
 
@@ -50,28 +54,28 @@ export const ProgressiveAttachmentImage = ({
   return (
     <figure
       ref={containerRef}
-      data-phase={phase}
       aria-busy={phase === 'loading-original'}
-      style={{ aspectRatio } satisfies CSSProperties}
       className={cn('relative isolate m-0 min-h-28 w-full overflow-hidden bg-[#bfd0cc]', className)}
+      data-phase={phase}
+      style={{ aspectRatio } satisfies CSSProperties}
     >
       {sourceUrl ? (
         <img
           key={sourceUrl}
-          src={sourceUrl}
           alt={alt}
+          className='animate-in fade-in absolute inset-0 z-10 size-full object-cover duration-200 motion-reduce:animate-none'
           decoding='async'
           loading='lazy'
+          src={sourceUrl}
           onError={onImageError}
-          className='animate-in fade-in absolute inset-0 z-10 size-full object-cover duration-200 motion-reduce:animate-none'
         />
       ) : phase === 'error' ? (
         fallback
       ) : (
         <span
-          role='img'
           aria-label={`Loading ${alt}`}
           className='absolute inset-0 animate-pulse bg-[linear-gradient(105deg,transparent_25%,rgba(255,255,255,0.32)_48%,transparent_72%)] bg-[length:220%_100%] motion-reduce:animate-none'
+          role='img'
         />
       )}
       {phase === 'loading-original' && sourceUrl && (

@@ -2,6 +2,7 @@ import { createParser } from 'nuqs/server';
 import { z } from 'zod';
 
 import type { ExtendedColumnFilter, ExtendedColumnSort } from '@/types/data-table';
+
 import { dataTableConfig } from '@/app/config/data-table.ts';
 
 const sortingItemSchema = z.object({

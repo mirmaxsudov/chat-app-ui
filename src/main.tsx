@@ -1,20 +1,21 @@
 import type { QueryKey } from '@tanstack/react-query';
-import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { i18n } from '@lingui/core';
 import { I18nProvider } from '@lingui/react';
+import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 import { isAxiosError } from 'axios';
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 import { toast } from 'sonner';
 
+import { clearAuthSession, getAccessToken } from '@/modules/auth';
+import { setAccessTokenGetter, setUnauthorizedHandler } from '@/utils/api';
+
 import { routeTree } from './routeTree.gen';
+import { initialI18nActivate } from './shared/i18n';
 
 import './app/styles/index.css';
-import { initialI18nActivate } from './shared/i18n';
-import { setAccessTokenGetter, setUnauthorizedHandler } from '@/utils/api';
-import { clearAuthSession, getAccessToken } from '@/modules/auth';
 
 interface ApiErrorResponse {
   message?: string;

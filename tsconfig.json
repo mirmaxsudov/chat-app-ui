@@ -17,6 +17,7 @@
     "noUnusedParameters": true,
     "noEmit": true,
     "verbatimModuleSyntax": true,
+
     /* Linting */
     "skipLibCheck": true,
     "noUncheckedSideEffectImports": true

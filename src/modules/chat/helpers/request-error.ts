@@ -1,4 +1,4 @@
-export const requestErrorMessage = () => {
-  return 'ERROR';
+export const requestErrorMessage = () => 
+   'ERROR'
   // return getApiErrorMessage(error, fallback);
-};
+;

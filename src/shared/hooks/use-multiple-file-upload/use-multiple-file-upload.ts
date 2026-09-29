@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { resolveUploadEndpoint } from '../use-file-upload';
-import { MultipleFileUploadController } from './multiple-file-upload.controller';
+
 import type {
   AddFilesOptions,
   UseMultipleFileUploadOptions,
   UseMultipleFileUploadResult
 } from './types';
+
+import { resolveUploadEndpoint } from '../use-file-upload';
+import { MultipleFileUploadController } from './multiple-file-upload.controller';
 
 export const useMultipleFileUpload = (
   options: UseMultipleFileUploadOptions

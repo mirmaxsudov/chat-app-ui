@@ -13,7 +13,7 @@ export const FormTextarea = ({ label, description, isRequired, ...props }: FormT
   const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
 
   return (
-    <FormBase isRequired={isRequired} label={label} description={description}>
+    <FormBase description={description} isRequired={isRequired} label={label}>
       <Textarea
         aria-invalid={isInvalid}
         id={field.name}

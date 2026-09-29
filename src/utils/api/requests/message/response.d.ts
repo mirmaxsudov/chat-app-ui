@@ -2,9 +2,9 @@ type ChatsResponse = ApiPaginationResponse<Chat>;
 type ChatResponse = ApiResponse<Chat>;
 
 interface ApiMessagesResponse {
+  hasMore: boolean;
   messages: ChatMessage[];
   nextBeforeSeq: number | null;
-  hasMore: boolean;
 }
 
 type MessagesResponse = ApiResponse<ApiMessagesResponse>;

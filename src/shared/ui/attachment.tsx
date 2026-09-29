@@ -1,7 +1,9 @@
-import * as React from 'react';
+import type {VariantProps} from 'class-variance-authority';
+
 import { mergeProps } from '@base-ui/react/merge-props';
 import { useRender } from '@base-ui/react/use-render';
-import { cva, type VariantProps } from 'class-variance-authority';
+import { cva  } from 'class-variance-authority';
+import * as React from 'react';
 
 import { cn } from '@/shared/lib/utils.ts';
 import { Button } from '@/shared/ui/button.tsx';
@@ -24,7 +26,7 @@ const attachmentVariants = cva(
   }
 );
 
-function Attachment({
+const Attachment = ({
   className,
   state = 'done',
   size = 'default',
@@ -32,19 +34,17 @@ function Attachment({
   ...props
 }: React.ComponentProps<'div'> &
   VariantProps<typeof attachmentVariants> & {
-    state?: 'idle' | 'uploading' | 'processing' | 'error' | 'done';
-  }) {
-  return (
+    state?: 'done' | 'error' | 'idle' | 'processing' | 'uploading';
+  }) => (
     <div
+      className={cn(attachmentVariants({ size, orientation }), className)}
+      data-orientation={orientation}
+      data-size={size}
       data-slot='attachment'
       data-state={state}
-      data-size={size}
-      data-orientation={orientation}
-      className={cn(attachmentVariants({ size, orientation }), className)}
       {...props}
     />
-  );
-}
+  )
 
 const attachmentMediaVariants = cva(
   "relative flex aspect-square w-10 shrink-0 items-center justify-center overflow-hidden rounded-md bg-muted text-foreground group-data-[orientation=vertical]/attachment:w-full group-data-[size=sm]/attachment:w-8 group-data-[size=xs]/attachment:w-7 group-data-[size=xs]/attachment:rounded-sm group-data-[state=error]/attachment:bg-destructive/10 group-data-[state=error]/attachment:text-destructive group-data-[orientation=vertical]/attachment:*:data-[slot=spinner]:size-6! [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 group-data-[orientation=vertical]/attachment:[&_svg:not([class*='size-'])]:size-6 group-data-[size=xs]/attachment:[&_svg:not([class*='size-'])]:size-3.5",
@@ -62,90 +62,78 @@ const attachmentMediaVariants = cva(
   }
 );
 
-function AttachmentMedia({
+const AttachmentMedia = ({
   className,
   variant = 'icon',
   ...props
-}: React.ComponentProps<'div'> & VariantProps<typeof attachmentMediaVariants>) {
-  return (
+}: React.ComponentProps<'div'> & VariantProps<typeof attachmentMediaVariants>) => (
     <div
+      className={cn(attachmentMediaVariants({ variant }), className)}
       data-slot='attachment-media'
       data-variant={variant}
-      className={cn(attachmentMediaVariants({ variant }), className)}
       {...props}
     />
-  );
-}
+  )
 
-function AttachmentContent({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
+const AttachmentContent = ({ className, ...props }: React.ComponentProps<'div'>) => (
     <div
-      data-slot='attachment-content'
       className={cn(
         'max-w-full min-w-0 flex-1 leading-tight group-data-[orientation=vertical]/attachment:px-1',
         className
       )}
+      data-slot='attachment-content'
       {...props}
     />
-  );
-}
+  )
 
-function AttachmentTitle({ className, ...props }: React.ComponentProps<'span'>) {
-  return (
+const AttachmentTitle = ({ className, ...props }: React.ComponentProps<'span'>) => (
     <span
-      data-slot='attachment-title'
       className={cn(
         'group-data-[state=processing]/attachment:shimmer group-data-[state=uploading]/attachment:shimmer block max-w-full min-w-0 truncate font-medium',
         className
       )}
+      data-slot='attachment-title'
       {...props}
     />
-  );
-}
+  )
 
-function AttachmentDescription({ className, ...props }: React.ComponentProps<'span'>) {
-  return (
+const AttachmentDescription = ({ className, ...props }: React.ComponentProps<'span'>) => (
     <span
-      data-slot='attachment-description'
       className={cn(
         'text-muted-foreground group-data-[state=error]/attachment:text-destructive/80 mt-0.5 block min-w-0 truncate text-xs',
         'max-w-full',
         className
       )}
+      data-slot='attachment-description'
       {...props}
     />
-  );
-}
+  )
 
-function AttachmentActions({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
+const AttachmentActions = ({ className, ...props }: React.ComponentProps<'div'>) => (
     <div
-      data-slot='attachment-actions'
       className={cn(
         'relative z-20 flex shrink-0 items-center group-data-[orientation=vertical]/attachment:absolute group-data-[orientation=vertical]/attachment:top-3 group-data-[orientation=vertical]/attachment:right-3 group-data-[orientation=vertical]/attachment:gap-1',
         className
       )}
+      data-slot='attachment-actions'
       {...props}
     />
-  );
-}
+  )
 
-function AttachmentAction({
+const AttachmentAction = ({
   className,
   variant,
   size = 'icon-xs',
   ...props
-}: React.ComponentProps<typeof Button>) {
-  return (
+}: React.ComponentProps<typeof Button>) => (
     <Button
-      data-slot='attachment-action'
-      variant={variant ?? 'ghost'}
-      size={size}
       className={cn(className)}
+      data-slot='attachment-action'
+      size={size}
+      variant={variant ?? 'ghost'}
       {...props}
     />
-  );
-}
+  )
 
 function AttachmentTrigger({
   className,
@@ -169,27 +157,25 @@ function AttachmentTrigger({
   });
 }
 
-function AttachmentGroup({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
+const AttachmentGroup = ({ className, ...props }: React.ComponentProps<'div'>) => (
     <div
-      data-slot='attachment-group'
       className={cn(
         'scroll-fade-x flex min-w-0 snap-x snap-mandatory scroll-px-1 scrollbar-none gap-3 overflow-x-auto overscroll-x-contain py-1 *:data-[slot=attachment]:flex-none *:data-[slot=attachment]:snap-start',
         className
       )}
+      data-slot='attachment-group'
       {...props}
     />
-  );
-}
+  )
 
 export {
   Attachment,
+  AttachmentAction,
+  AttachmentActions,
+  AttachmentContent,
+  AttachmentDescription,
   AttachmentGroup,
   AttachmentMedia,
-  AttachmentContent,
   AttachmentTitle,
-  AttachmentDescription,
-  AttachmentActions,
-  AttachmentAction,
   AttachmentTrigger
 };

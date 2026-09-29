@@ -1,6 +1,8 @@
+import type {VariantProps} from 'class-variance-authority';
+
 import { mergeProps } from '@base-ui/react/merge-props';
 import { useRender } from '@base-ui/react/use-render';
-import { cva, type VariantProps } from 'class-variance-authority';
+import { cva  } from 'class-variance-authority';
 
 import { cn } from '@/shared/lib/utils.ts';
 import { Separator } from '@/shared/ui/separator.tsx';
@@ -22,21 +24,19 @@ const buttonGroupVariants = cva(
   }
 );
 
-function ButtonGroup({
+const ButtonGroup = ({
   className,
   orientation,
   ...props
-}: React.ComponentProps<'div'> & VariantProps<typeof buttonGroupVariants>) {
-  return (
+}: React.ComponentProps<'div'> & VariantProps<typeof buttonGroupVariants>) => (
     <div
-      role='group'
-      data-slot='button-group'
-      data-orientation={orientation}
       className={cn(buttonGroupVariants({ orientation }), className)}
+      data-orientation={orientation}
+      data-slot='button-group'
+      role='group'
       {...props}
     />
-  );
-}
+  )
 
 function ButtonGroupText({ className, render, ...props }: useRender.ComponentProps<'div'>) {
   return useRender({
@@ -57,22 +57,20 @@ function ButtonGroupText({ className, render, ...props }: useRender.ComponentPro
   });
 }
 
-function ButtonGroupSeparator({
+const ButtonGroupSeparator = ({
   className,
   orientation = 'vertical',
   ...props
-}: React.ComponentProps<typeof Separator>) {
-  return (
+}: React.ComponentProps<typeof Separator>) => (
     <Separator
-      data-slot='button-group-separator'
-      orientation={orientation}
       className={cn(
         'bg-input relative self-stretch data-horizontal:mx-px data-horizontal:w-auto data-vertical:my-px data-vertical:h-auto',
         className
       )}
+      data-slot='button-group-separator'
+      orientation={orientation}
       {...props}
     />
-  );
-}
+  )
 
 export { ButtonGroup, ButtonGroupSeparator, ButtonGroupText, buttonGroupVariants };

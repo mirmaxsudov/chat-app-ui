@@ -1,8 +1,10 @@
 import { ArrowLeft, Sidebar } from 'lucide-react';
-import { Button } from '@/shared/ui/button';
-import { cn } from '@/shared/lib/utils';
-import { ChatAvatar } from './ChatAvatar';
+
 import { presenceLabel } from '@/modules/presence';
+import { cn } from '@/shared/lib/utils.ts';
+import { Button } from '@/shared/ui/button.tsx';
+
+import { ChatAvatar } from '../ChatAvatar.tsx';
 
 interface ChatHeaderProps {
   chat: ChatSummary;
@@ -13,17 +15,17 @@ interface ChatHeaderProps {
 export const ChatHeader = ({ chat, onBack, onToggleDetails }: ChatHeaderProps) => (
   <header className='flex h-17 shrink-0 items-center gap-2 border-b border-[#dfe6eb] bg-white px-2 sm:px-4'>
     <Button
-      variant='ghost'
-      size='icon-lg'
-      className='rounded-full text-[#71808b] md:hidden'
       aria-label='Back to conversations'
+      className='rounded-full text-[#71808b] md:hidden'
+      size='icon-lg'
+      variant='ghost'
       onClick={onBack}
     >
       <ArrowLeft className='size-5' />
     </Button>
     <button
-      type='button'
       className='flex min-w-0 flex-1 items-center gap-3 rounded-lg p-1 text-left hover:bg-[#f4f7f9]'
+      type='button'
       onClick={onToggleDetails}
     >
       <ChatAvatar chat={chat} className='size-10' />
@@ -43,10 +45,10 @@ export const ChatHeader = ({ chat, onBack, onToggleDetails }: ChatHeaderProps) =
       </span>
     </button>
     <Button
-      variant='ghost'
-      size='icon-lg'
-      className='rounded-full text-[#71808b]'
       aria-label='Toggle chat details'
+      className='rounded-full text-[#71808b]'
+      size='icon-lg'
+      variant='ghost'
       onClick={onToggleDetails}
     >
       <Sidebar className='size-5' />

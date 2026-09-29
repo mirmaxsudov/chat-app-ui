@@ -1,5 +1,5 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { useLingui } from '@lingui/react/macro';
+import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { LockKeyholeIcon, MessageCircleMoreIcon } from 'lucide-react';
 
 const AuthLayout = () => {
@@ -11,7 +11,7 @@ const AuthLayout = () => {
         <section className='bg-relay-deep text-primary-foreground relative hidden min-h-svh overflow-hidden px-12 py-10 lg:flex lg:flex-col lg:justify-between xl:px-16 xl:py-12'>
           <div className='relative flex items-center gap-3 text-base font-semibold'>
             <span className='bg-relay-signal text-relay-deep grid size-10 place-items-center rounded-full'>
-              <MessageCircleMoreIcon className='size-5' aria-hidden='true' />
+              <MessageCircleMoreIcon aria-hidden='true' className='size-5' />
             </span>
             Relay
           </div>
@@ -30,7 +30,7 @@ const AuthLayout = () => {
           </div>
 
           <div className='relative flex items-center gap-2 text-sm text-white/55'>
-            <LockKeyholeIcon className='size-4' aria-hidden='true' />
+            <LockKeyholeIcon aria-hidden='true' className='size-4' />
             {t`Private workspace access`}
           </div>
 
@@ -43,7 +43,7 @@ const AuthLayout = () => {
           <div className='w-full max-w-md'>
             <div className='mb-14 flex items-center gap-3 text-base font-semibold lg:hidden'>
               <span className='bg-relay-deep text-relay-signal grid size-10 place-items-center rounded-full'>
-                <MessageCircleMoreIcon className='size-5' aria-hidden='true' />
+                <MessageCircleMoreIcon aria-hidden='true' className='size-5' />
               </span>
               Relay
             </div>

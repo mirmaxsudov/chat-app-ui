@@ -1,6 +1,8 @@
 import type { Column } from '@tanstack/react-table';
-import { dataTableConfig } from '@/app/config/data-table.ts';
+
 import type { ExtendedColumnFilter, FilterOperator, FilterVariant } from '@/types/data-table';
+
+import { dataTableConfig } from '@/app/config/data-table.ts';
 
 export function getCommonPinningStyles<TData>({
   column,
@@ -21,7 +23,7 @@ export function getCommonPinningStyles<TData>({
           ? '4px 0 4px -4px var(--border) inset'
           : undefined
       : undefined,
-    border: withBorder ? `1px solid var(--border)` : undefined,
+    border: withBorder ? '1px solid var(--border)' : undefined,
     left: isPinned === 'left' ? `${column.getStart('left')}px` : undefined,
     right: isPinned === 'right' ? `${column.getAfter('right')}px` : undefined,
     opacity: isPinned ? 0.97 : 1,

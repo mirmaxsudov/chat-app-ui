@@ -1,5 +1,7 @@
 import type { ControlledProps, UncontrolledProps } from 'react-medium-image-zoom';
+
 import Zoom from 'react-medium-image-zoom';
+
 import { cn } from '@/shared/lib/utils';
 
 export type ImageZoomProps = UncontrolledProps & {

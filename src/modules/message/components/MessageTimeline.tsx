@@ -1,27 +1,23 @@
+import Linkify from 'linkify-react';
 import { Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+
+import { formatMessageDate, formatMessageTime, RequestState } from '@/modules/chat';
+import { MessageAttachments, MessageContextMenu } from '@/modules/message';
+import { LINKIFY_OPTIONS } from '@/shared/constants';
+import { cn } from '@/shared/lib/utils';
 import { Bubble, BubbleContent } from '@/shared/ui/bubble';
 import { Button } from '@/shared/ui/button';
 import { Message, MessageContent, MessageGroup } from '@/shared/ui/message';
-import { cn } from '@/shared/lib/utils';
-import { RequestState } from './RequestState';
-import {
-  formatMessageDate,
-  formatMessageTime,
-  MessageAttachments,
-  MessageContextMenu
-} from '@/modules/chat';
-import Linkify from 'linkify-react';
-import { LINKIFY_OPTIONS } from '@/shared/constants';
 
 interface MessageTimelineProps {
-  messages: ChatMessage[];
-  loading: boolean;
   error?: string;
-  onRetry: () => void;
   hasMore: boolean;
+  loading: boolean;
   loadingMore: boolean;
+  messages: ChatMessage[];
   onLoadMore: () => void;
   onRefreshPendingPreviews: () => Promise<unknown>;
+  onRetry: () => void;
 }
 
 export const MessageTimeline = ({
@@ -114,9 +110,9 @@ export const MessageTimeline = ({
       <div className='pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,#7b9b93_1.2px,transparent_1.4px)] [background-size:46px_46px] opacity-30' />
       <div
         ref={viewport}
-        className='relative h-full overflow-y-auto overscroll-contain'
-        aria-label='Message history'
         aria-busy={loading}
+        aria-label='Message history'
+        className='relative h-full overflow-y-auto overscroll-contain'
       >
         {loading ? (
           <RequestState loading message='Loading messages…' />
@@ -125,10 +121,10 @@ export const MessageTimeline = ({
             {error && <RequestState message={error} onRetry={onRetry} />}
             {hasMore && (
               <Button
-                variant='outline'
                 className='mx-auto mb-5 bg-white'
-                onClick={onLoadMore}
                 disabled={loadingMore}
+                variant='outline'
+                onClick={onLoadMore}
               >
                 {loadingMore ? 'Loading…' : 'Load older messages'}
               </Button>
@@ -153,12 +149,11 @@ export const MessageTimeline = ({
                     <Message align={message.mine ? 'end' : 'start'}>
                       <MessageContent>
                         <Bubble
-                          variant={message.mine ? 'tinted' : 'outline'}
                           align={message.mine ? 'end' : 'start'}
                           className='max-w-[88%] sm:max-w-[72%]'
+                          variant={message.mine ? 'tinted' : 'outline'}
                         >
                           <MessageContextMenu
-                            message={message}
                             renderContent={
                               <BubbleContent
                                 className={cn(
@@ -189,14 +184,15 @@ export const MessageTimeline = ({
                                     </span>
                                   )}
                                   <time
-                                    dateTime={message.createdAt}
                                     className='ml-2 inline-block text-[0.6rem] text-[#73817c]'
+                                    dateTime={message.createdAt}
                                   >
                                     {formatMessageTime(message.createdAt)}
                                   </time>
                                 </span>
                               </BubbleContent>
                             }
+                            message={message}
                           />
                         </Bubble>
                       </MessageContent>

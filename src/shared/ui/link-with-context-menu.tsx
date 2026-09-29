@@ -1,5 +1,7 @@
 import type { IntermediateRepresentation } from 'linkifyjs';
+
 import { CopyIcon } from 'lucide-react';
+
 import {
   ContextMenu,
   ContextMenuContent,
@@ -41,7 +43,7 @@ export const LinkWithContextMenu = ({ attributes, content }: IntermediateReprese
     <ContextMenu>
       <ContextMenuTrigger
         className={attributes.class}
-        render={<a href={href} target={attributes.target} rel={attributes.rel} title={href} />}
+        render={<a href={href} rel={attributes.rel} target={attributes.target} title={href} />}
       >
         {content}
       </ContextMenuTrigger>

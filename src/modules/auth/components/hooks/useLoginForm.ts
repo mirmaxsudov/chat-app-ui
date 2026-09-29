@@ -1,10 +1,13 @@
-import { useAppForm } from '@/shared/ui/form/hooks';
-import { type LoginFormSchema, loginFormSchema, setAuthSession } from '@/modules/auth';
-import { useMutation } from '@tanstack/react-query';
-import { postLogin } from '@/utils/api';
 import { useLingui } from '@lingui/react/macro';
-import { toast } from 'sonner';
+import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
+import { toast } from 'sonner';
+
+import type {LoginFormSchema} from '@/modules/auth';
+
+import {  loginFormSchema, setAuthSession } from '@/modules/auth';
+import { useAppForm } from '@/shared/ui/form/hooks';
+import { postLogin } from '@/utils/api';
 
 export const useLoginForm = () => {
   const { t } = useLingui();

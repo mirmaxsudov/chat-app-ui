@@ -1,4 +1,5 @@
 import type { Opts } from 'linkifyjs';
+
 import { LinkWithContextMenu } from '@/shared/ui/link-with-context-menu';
 
 export const LINKIFY_OPTIONS = {

@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import { t } from '@lingui/core/macro';
+import { z } from 'zod';
 
 export const loginFormSchema = () =>
   z.object({

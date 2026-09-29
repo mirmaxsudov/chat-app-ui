@@ -4,17 +4,16 @@ import type * as React from 'react';
 import { useLingui } from '@lingui/react/macro';
 import { flexRender } from '@tanstack/react-table';
 
+import { getCommonPinningStyles } from '@/shared/lib/data-table.ts';
+import { cn } from '@/shared/lib/utils.ts';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 
 import { DataTablePagination } from './data-table-pagination';
-import { cn } from '@/shared/lib/utils.ts';
-import { getCommonPinningStyles } from '@/shared/lib/data-table.ts';
 
 interface DataTableProps<TData> extends React.ComponentProps<'div'> {
   actionBar?: React.ReactNode;
   isLoading?: boolean;
-  table: TanstackTable<TData>;
   loadingOptions?: {
     cellWidths?: string[];
     columnCount: number;
@@ -24,6 +23,7 @@ interface DataTableProps<TData> extends React.ComponentProps<'div'> {
     withPagination?: boolean;
     withViewOptions?: boolean;
   };
+  table: TanstackTable<TData>;
 }
 
 export const DataTable = <TData,>({

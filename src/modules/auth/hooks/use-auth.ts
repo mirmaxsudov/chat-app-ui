@@ -1,5 +1,6 @@
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { useRouter } from '@tanstack/react-router';
+
 import { currentUserQueryOptions } from '@/modules/user';
 
 export const useAuth = () => {

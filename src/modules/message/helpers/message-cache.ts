@@ -1,4 +1,6 @@
-import { replaceEqualDeep, type InfiniteData } from '@tanstack/react-query';
+import type {InfiniteData} from '@tanstack/react-query';
+
+import {  replaceEqualDeep } from '@tanstack/react-query';
 
 /** Prefer newly generated attachment metadata without letting a stale echo clear it again. */
 export const mergeConfirmedMessage = (
@@ -51,9 +53,7 @@ export const mergeConfirmedMessage = (
 export const insertConfirmedMessage = <TPageParam = unknown>(
   history: InfiniteData<ApiMessagesResponse, TPageParam> | undefined,
   message: ChatMessage
-): InfiniteData<ApiMessagesResponse, TPageParam> | undefined => {
-  return insertConfirmedMessages(history, [message]);
-};
+): InfiniteData<ApiMessagesResponse, TPageParam> | undefined => insertConfirmedMessages(history, [message]);
 
 export const insertConfirmedMessages = <TPageParam = unknown>(
   history: InfiniteData<ApiMessagesResponse, TPageParam> | undefined,

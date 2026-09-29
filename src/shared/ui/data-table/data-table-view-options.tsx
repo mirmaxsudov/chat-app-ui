@@ -3,6 +3,7 @@ import type { Table } from '@tanstack/react-table';
 import { Check, ChevronsUpDown, Settings2 } from 'lucide-react';
 import * as React from 'react';
 
+import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import {
   Command,
@@ -13,7 +14,6 @@ import {
   CommandList
 } from '@/shared/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
-import { cn } from '@/shared/lib/utils';
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>;
@@ -24,7 +24,7 @@ export const DataTableViewOptions = <TData,>({ table }: DataTableViewOptionsProp
     () =>
       table
         .getAllColumns()
-        .filter((column) => typeof column.accessorFn !== 'undefined' && column.getCanHide()),
+        .filter((column) => column.accessorFn !== undefined && column.getCanHide()),
     [table]
   );
 
@@ -35,9 +35,9 @@ export const DataTableViewOptions = <TData,>({ table }: DataTableViewOptionsProp
           <Button
             aria-label='Toggle columns'
             className='ml-auto hidden h-8 lg:flex'
+            role='combobox'
             size='sm'
             variant='outline'
-            role='combobox'
           >
             <Settings2 />
             View

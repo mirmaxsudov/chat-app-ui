@@ -1,8 +1,14 @@
-import { Client, ReconnectionTimeMode, type StompConfig } from '@stomp/stompjs';
-import type { RealtimeMessageEvent, RealtimePresenceEvent } from './event';
-import { parseMessageEvent, parsePresenceEvent } from './event';
+import type {StompConfig} from '@stomp/stompjs';
+
+import { Client, ReconnectionTimeMode  } from '@stomp/stompjs';
+
 import type { RealtimeConnectionStatus } from '@/modules/presence';
+
 import { getAccessTokenExpiry } from '@/modules/auth';
+
+import type { RealtimeMessageEvent, RealtimePresenceEvent } from './event';
+
+import { parseMessageEvent, parsePresenceEvent } from './event';
 
 export const resolveSockJsUrl = (
   apiUrl: string | undefined,
@@ -18,15 +24,15 @@ export const resolveSockJsUrl = (
 };
 
 interface ConnectionOptions {
-  getSession: () => string | null;
   webSocketFactory: NonNullable<StompConfig['webSocketFactory']>;
-  onMessage: (event: RealtimeMessageEvent) => void;
-  onPresence: (event: RealtimePresenceEvent) => void;
+  checkAuthentication: () => Promise<boolean>;
+  createClient?: (config: StompConfig) => Client;
+  getSession: () => string | null;
   onConnected: () => void;
   onConnectionStateChange: (status: RealtimeConnectionStatus) => void;
   onInvalidSession: () => void;
-  checkAuthentication: () => Promise<boolean>;
-  createClient?: (config: StompConfig) => Client;
+  onMessage: (event: RealtimeMessageEvent) => void;
+  onPresence: (event: RealtimePresenceEvent) => void;
 }
 
 /** STOMP owns reconnect/backoff; private message and presence subscriptions share one client. */

@@ -1,11 +1,10 @@
 export { MultipleFileUploadController } from './multiple-file-upload.controller';
 export {
-  DEFAULT_UPLOAD_CONCURRENCY,
   calculateMultipleUploadSummary,
+  DEFAULT_UPLOAD_CONCURRENCY,
   getFileIdentity,
   normalizeUploadConcurrency
 } from './multiple-file-upload.utils';
-export { useMultipleFileUpload } from './use-multiple-file-upload';
 export type {
   AddFilesOptions,
   MultipleFileUploadItem,
@@ -15,3 +14,4 @@ export type {
   UseMultipleFileUploadOptions,
   UseMultipleFileUploadResult
 } from './types';
+export { useMultipleFileUpload } from './use-multiple-file-upload';
