@@ -25,10 +25,10 @@ const { applyMessageToCache, applyMessagesToCache } = await load(
   'features/chat/model/chat-cache.ts'
 );
 const { chatMessagesInfiniteQueryOptions, chatMessagesQueryOptions } = await load(
-  'features/message/api/query-options.ts'
+  'features/message/api/query-index.ts'
 );
 const { chatsInfiniteQueryOptions, chatByIdQueryOptions } = await load(
-  'features/chat/api/query-options.ts'
+  'features/chat/api/query-index.ts'
 );
 const { apiClient } = await load('shared/api/client.ts');
 const { applyPresence, usePresenceStore } = await load('features/chat/presence/presence-store.ts');

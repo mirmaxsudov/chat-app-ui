@@ -30,6 +30,18 @@ msgid "Back to Login"
 msgstr ""
 
 #. js-lingui-explicit-id
+msgid "Oops! Page Not Found!"
+msgstr ""
+
+#. js-lingui-explicit-id
+msgid "It seems like the page you're looking for does not exist or might have been removed."
+msgstr ""
+
+#. js-lingui-explicit-id
+msgid "Back to Home"
+msgstr ""
+
+#. js-lingui-explicit-id
 msgid "Access Forbidden"
 msgstr ""
 
@@ -38,23 +50,11 @@ msgid "You don't have necessary permission to view this resource."
 msgstr ""
 
 #. js-lingui-explicit-id
-msgid "Back to Home"
-msgstr ""
-
-#. js-lingui-explicit-id
 msgid "Oops! Something went wrong :')"
 msgstr ""
 
 #. js-lingui-explicit-id
 msgid "Refresh"
-msgstr ""
-
-#. js-lingui-explicit-id
-msgid "Oops! Page Not Found!"
-msgstr ""
-
-#. js-lingui-explicit-id
-msgid "It seems like the page you're looking for does not exist or might have been removed."
 msgstr ""
 
 msgid "{selectedCount} of {pageCount} row(s) selected."
@@ -72,14 +72,50 @@ msgstr ""
 msgid "Clear {title} filter"
 msgstr ""
 
+msgid "Enter password"
+msgstr ""
+
+msgid "Enter phone number"
+msgstr ""
+
+msgid "Enter your password to login."
+msgstr ""
+
+msgid "Enter your phone number to login."
+msgstr ""
+
 msgid "From"
 msgstr ""
 
 msgid "No results."
 msgstr ""
 
+msgid "Password"
+msgstr ""
+
+msgid "Phone number"
+msgstr ""
+
 msgid "Rows per page"
 msgstr ""
 
+msgid "Sign in to Relay."
+msgstr ""
+
+msgid "Signing in…"
+msgstr ""
+
+msgid "This field is required."
+msgstr ""
+
 msgid "to"
+msgstr ""
+
+msgid "Use the phone number associated with your workspace account."
+msgstr ""
+
+msgid "Welcome back"
+msgstr ""
+
+msgid "Your credentials are sent over a secure connection."
 msgstr ""

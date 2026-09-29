@@ -1,29 +1,47 @@
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import * as React from 'react';
 
-import { Input } from '@/shared/ui/input';
-
-import { Button } from './button';
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput
+} from '@/shared/ui/input-group';
 import { cn } from '@/shared/lib/utils';
 
-type PasswordInputProps = Omit<React.ComponentProps<typeof Input>, 'type'>;
+type PasswordInputProps = Omit<React.ComponentProps<typeof InputGroupInput>, 'type'> & {
+  inputClassName?: string;
+};
 
-const PasswordInput = ({ ref, className, disabled, ...props }: PasswordInputProps) => {
+const PasswordInput = ({
+  ref,
+  className,
+  inputClassName,
+  disabled,
+  ...props
+}: PasswordInputProps) => {
   const [showPassword, setShowPassword] = React.useState(false);
+
   return (
-    <div className={cn('relative rounded-md', className)}>
-      <Input ref={ref} disabled={disabled} type={showPassword ? 'text' : 'password'} {...props} />
-      <Button
-        className='text-muted-foreground absolute top-1/2 right-1 h-6 w-6 -translate-y-1/2 rounded-md'
+    <InputGroup className={className} data-disabled={disabled}>
+      <InputGroupInput
+        ref={ref}
         disabled={disabled}
-        size='icon'
-        type='button'
-        variant='ghost'
-        onClick={() => setShowPassword((prev) => !prev)}
-      >
-        {showPassword ? <EyeIcon size={18} /> : <EyeOffIcon size={18} />}
-      </Button>
-    </div>
+        type={showPassword ? 'text' : 'password'}
+        className={cn('h-full px-4', inputClassName)}
+        {...props}
+      />
+      <InputGroupAddon align='inline-end'>
+        <InputGroupButton
+          aria-label={showPassword ? 'Hide password' : 'Show password'}
+          disabled={disabled}
+          size='icon-xs'
+          onClick={() => setShowPassword((prev) => !prev)}
+        >
+          {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+        </InputGroupButton>
+      </InputGroupAddon>
+    </InputGroup>
   );
 };
 PasswordInput.displayName = 'PasswordInput';

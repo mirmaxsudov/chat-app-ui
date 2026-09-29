@@ -1,5 +1,6 @@
 import tailwindcss from '@tailwindcss/vite';
 import { lingui } from '@lingui/vite-plugin';
+import babel from '@rolldown/plugin-babel';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
@@ -12,12 +13,15 @@ export default defineConfig({
     }
   },
   plugins: [
-    lingui(),
     tanstackRouter({
       target: 'react',
       autoCodeSplitting: true
     }),
     react(),
+    lingui(),
+    babel({
+      plugins: ['@lingui/babel-plugin-lingui-macro']
+    }),
     tailwindcss()
   ],
   server: {
