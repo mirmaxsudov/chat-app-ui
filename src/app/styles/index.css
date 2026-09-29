@@ -17,6 +17,13 @@
   --social-bg: rgba(244, 243, 236, 0.5);
   --shadow: rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
+  --relay-deep: #173f35;
+  --relay-green: #2c7662;
+  --relay-signal: #dff85b;
+  --relay-paper: #f4f5ef;
+  --relay-mist: #dce4dd;
+  --relay-muted: #66736e;
+
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
@@ -99,6 +106,12 @@
 @theme inline {
   --font-heading: var(--font-sans);
   --font-sans: 'Inter Variable', sans-serif;
+  --color-relay-deep: var(--relay-deep);
+  --color-relay-green: var(--relay-green);
+  --color-relay-signal: var(--relay-signal);
+  --color-relay-paper: var(--relay-paper);
+  --color-relay-mist: var(--relay-mist);
+  --color-relay-muted: var(--relay-muted);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);

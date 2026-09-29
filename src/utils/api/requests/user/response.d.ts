@@ -1,0 +1,1 @@
+type CurrentUserResponse = ApiResponse<CurrentUser>;

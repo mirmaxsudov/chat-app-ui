@@ -1,8 +1,8 @@
 import type { QueryKey } from '@tanstack/react-query';
+import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { i18n } from '@lingui/core';
 import { I18nProvider } from '@lingui/react';
-import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 import { isAxiosError } from 'axios';
 import { StrictMode } from 'react';
@@ -12,9 +12,9 @@ import { toast } from 'sonner';
 import { routeTree } from './routeTree.gen';
 
 import './app/styles/index.css';
-import { clearAuthSession, getAuthSession } from './features/auth';
 import { initialI18nActivate } from './shared/i18n';
-import { setAccessTokenGetter, setUnauthorizedHandler } from './shared/api/client';
+import { setAccessTokenGetter, setUnauthorizedHandler } from '@/utils/api';
+import { clearAuthSession, getAccessToken } from '@/modules/auth';
 
 interface ApiErrorResponse {
   message?: string;
@@ -65,7 +65,7 @@ export const router = createRouter({
   defaultPendingMs: 0
 });
 
-setAccessTokenGetter(() => getAuthSession()?.accessToken ?? null);
+setAccessTokenGetter(getAccessToken);
 setUnauthorizedHandler(() => {
   clearAuthSession();
   queryClient.clear();
