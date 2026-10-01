@@ -1,10 +1,10 @@
-import type {CSSProperties, ReactNode} from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 
-import {   useEffect } from 'react';
+import { useEffect } from 'react';
 
 import { cn } from '@/shared/lib/utils';
 
-import { useProgressiveImage } from './use-progressive-image';
+import { useProgressiveImage } from '@/modules/message';
 
 interface ProgressiveAttachmentImageProps {
   alt: string;

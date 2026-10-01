@@ -2,17 +2,17 @@ import { X } from 'lucide-react';
 
 import { formatMessageDate } from '@/modules/chat';
 import { presenceLabel } from '@/modules/presence';
-import { Button } from '@/shared/ui/button.tsx';
-import { Separator } from '@/shared/ui/separator.tsx';
+import { Button } from '@/shared/ui/button';
+import { Separator } from '@/shared/ui/separator';
 
-import { ChatAvatar } from '../ChatAvatar.tsx';
+import { ChatAvatar } from '../ChatAvatar';
 
 export const ChatDetails = ({ chat, onClose }: { chat: ChatSummary; onClose: () => void }) => (
   <aside
     aria-label='Chat information'
     className='absolute inset-0 z-30 flex h-full min-h-0 flex-col overflow-y-auto border-l border-[#dfe6eb] bg-white shadow-[-16px_0_40px_rgba(45,67,80,0.12)] md:inset-y-0 md:right-0 md:left-auto md:w-80 xl:static xl:w-auto xl:shadow-none'
   >
-    <div className='flex h-[68px] shrink-0 items-center gap-3 border-b border-[#dfe6eb] px-4'>
+    <div className='flex h-17 shrink-0 items-center gap-3 border-b border-[#dfe6eb] px-4'>
       <Button
         aria-label='Close details'
         className='rounded-full text-[#71808b]'

@@ -1,6 +1,6 @@
 import { useRouter } from '@tanstack/react-router';
 
-import { ChatPage } from '@/modules/chat';
+import { ChatPage } from '@/modules/chat/components/ChatPage.tsx';
 
 export const ChatRoutePage = ({ chatId = null }: { chatId?: string | null }) => {
   const router = useRouter();

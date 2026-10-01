@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { preloadOriginalImage } from './image-load-queue';
-import { observeNearViewport } from './viewport-observer';
+import { preloadOriginalImage } from '@/modules/message';
+import { observeNearViewport } from '@/modules/message';
 
 export type ProgressiveImagePhase =
   'error' | 'loading-original' | 'original' | 'placeholder' | 'preview';
