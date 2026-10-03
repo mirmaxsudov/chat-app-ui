@@ -2,7 +2,7 @@ import type { Column } from '@tanstack/react-table';
 
 import { ChevronDown, ChevronsUpDown, ChevronUp, EyeOff, X } from 'lucide-react';
 
-import { cn } from '@/shared/lib/utils.ts';
+import { cn } from '@/shared/lib/utils';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,

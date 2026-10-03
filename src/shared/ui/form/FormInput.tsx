@@ -1,10 +1,10 @@
 import React from 'react';
 
-import type { FormControlProps } from './FormBase.tsx';
+import type { FormControlProps } from './FormBase';
 
 import { Input } from '../input';
-import { FormBase } from './FormBase.tsx';
-import { useFieldContext } from './hooks.ts';
+import { FormBase } from './FormBase';
+import { useFieldContext } from './hooks';
 
 type FormInputProps = FormControlProps & React.ComponentProps<typeof Input>;
 

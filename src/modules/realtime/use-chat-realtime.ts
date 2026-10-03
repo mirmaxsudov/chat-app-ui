@@ -12,8 +12,8 @@ import {
 import { presenceStore } from '@/modules/presence';
 import { getCurrentUser } from '@/utils/api';
 
-import { resolveSockJsUrl, startMessageConnection } from './connection.ts';
-import { createChatSynchronizer } from './synchronizer.ts';
+import { resolveSockJsUrl, startMessageConnection } from './connection';
+import { createChatSynchronizer } from './synchronizer';
 
 export const useChatRealtime = () => {
   const queryClient = useQueryClient();

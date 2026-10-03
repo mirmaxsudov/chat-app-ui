@@ -2,7 +2,7 @@
 
 import * as ResizablePrimitive from 'react-resizable-panels';
 
-import { cn } from '@/shared/lib/utils.ts';
+import { cn } from '@/shared/lib/utils';
 
 const ResizablePanelGroup = ({ className, ...props }: ResizablePrimitive.GroupProps) => (
     <ResizablePrimitive.Group

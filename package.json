@@ -89,7 +89,7 @@
     "eslint-plugin-lingui": "^0.11.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.4",
-    "extensionless-imports": "^0.1.0",
+    "extensionless-imports": "^0.3.1",
     "globals": "^17.11.0",
     "jsdom": "^26.0.0",
     "lint-staged": "^16.2.6",

@@ -1,10 +1,10 @@
 import { ArrowLeft, Sidebar } from 'lucide-react';
 
 import { presenceLabel } from '@/modules/presence';
-import { cn } from '@/shared/lib/utils.ts';
-import { Button } from '@/shared/ui/button.tsx';
+import { cn } from '@/shared/lib/utils';
+import { Button } from '@/shared/ui/button';
 
-import { ChatAvatar } from '../ChatAvatar.tsx';
+import { ChatAvatar } from '../ChatAvatar';
 
 interface ChatHeaderProps {
   chat: ChatSummary;

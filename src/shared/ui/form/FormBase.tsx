@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
 import { Field, FieldContent, FieldDescription, FieldError, FieldLabel } from '../field';
-import { useFieldContext } from './hooks.ts';
+import { useFieldContext } from './hooks';
 
 export interface FormControlProps {
   description?: string;

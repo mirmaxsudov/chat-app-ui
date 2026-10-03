@@ -4,15 +4,15 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {  useState } from 'react';
 
 import { CHAT_QUERY_OPTIONS, chatByIdQueryOptions, requestErrorMessage } from '@/modules/chat';
-import { Button } from '@/shared/ui/button.tsx';
+import { Button } from '@/shared/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle
-} from '@/shared/ui/dialog.tsx';
-import { Input } from '@/shared/ui/input.tsx';
+} from '@/shared/ui/dialog';
+import { Input } from '@/shared/ui/input';
 import { postDMChat, postSavedChat } from '@/utils/api';
 
 export const NewChatDialog = ({

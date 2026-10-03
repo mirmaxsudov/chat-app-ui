@@ -3,13 +3,13 @@ import { useMemo, useState } from 'react';
 
 import { useAuth } from '@/modules/auth/hooks';
 import { UserProfileDialog } from '@/modules/user';
-import { cn } from '@/shared/lib/utils.ts';
-import { Button } from '@/shared/ui/button.tsx';
-import { InputGroup, InputGroupAddon, InputGroupInput } from '@/shared/ui/input-group.tsx';
-import { ScrollArea } from '@/shared/ui/scroll-area.tsx';
+import { cn } from '@/shared/lib/utils';
+import { Button } from '@/shared/ui/button';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/shared/ui/input-group';
+import { ScrollArea } from '@/shared/ui/scroll-area';
 
-import { ChatAvatar } from '../ChatAvatar.tsx';
-import { RequestState } from '../RequestState.tsx';
+import { ChatAvatar } from '../ChatAvatar';
+import { RequestState } from '../RequestState';
 
 interface ConversationListProps {
   activeChatId: string | null;

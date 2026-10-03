@@ -4,8 +4,8 @@ import type * as React from 'react';
 import { useLingui } from '@lingui/react/macro';
 import { flexRender } from '@tanstack/react-table';
 
-import { getCommonPinningStyles } from '@/shared/lib/data-table.ts';
-import { cn } from '@/shared/lib/utils.ts';
+import { getCommonPinningStyles } from '@/shared/lib/data-table';
+import { cn } from '@/shared/lib/utils';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 

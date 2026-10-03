@@ -7,9 +7,9 @@ import type { MultipleFileUploadItem } from '@/shared/hooks/use-multiple-file-up
 
 import { getAccessToken } from '@/modules/auth';
 import { useMultipleFileUpload } from '@/shared/hooks/use-multiple-file-upload';
-import { cn } from '@/shared/lib/utils.ts';
-import { Button } from '@/shared/ui/button.tsx';
-import { InputGroup, InputGroupTextarea } from '@/shared/ui/input-group.tsx';
+import { cn } from '@/shared/lib/utils';
+import { Button } from '@/shared/ui/button';
+import { InputGroup, InputGroupTextarea } from '@/shared/ui/input-group';
 
 interface MessageComposerProps {
   disabled?: boolean;
