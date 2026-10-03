@@ -1,4 +1,4 @@
-import type { ErrorComponentProps, ErrorRouteComponent } from '@tanstack/react-router';
+import type { ErrorRouteComponent } from '@tanstack/react-router';
 
 import { useLingui } from '@lingui/react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -15,10 +15,11 @@ interface RouteError extends Error {
   status?: number;
 }
 
-export const GeneralError: ErrorRouteComponent = ({ error }: ErrorComponentProps<RouteError>) => {
+export const GeneralError: ErrorRouteComponent = ({ error }) => {
   const { history, invalidate } = useRouter();
   const queryClient = useQueryClient();
   const { i18n } = useLingui();
+  const routeError = error as RouteError;
 
   const refreshPage = async () => {
     await queryClient.resetQueries();
@@ -28,10 +29,12 @@ export const GeneralError: ErrorRouteComponent = ({ error }: ErrorComponentProps
   return (
     <div className='h-svh w-full'>
       <div className='m-auto flex h-full w-full flex-col items-center justify-center gap-2'>
-        {error?.status && <h1 className='text-[7rem] leading-tight font-bold'>{error.status}</h1>}
+        {routeError.status && (
+          <h1 className='text-[7rem] leading-tight font-bold'>{routeError.status}</h1>
+        )}
         <span className='font-medium'>{i18n._("Oops! Something went wrong :')")}</span>
         <p className='text-muted-foreground text-center'>
-          {error?.response?.data?.message ?? error.message}
+          {routeError.response?.data?.message ?? routeError.message}
         </p>
         <div className='mt-6 flex gap-4'>
           <Button variant='outline' onClick={() => history.go(-1)}>
