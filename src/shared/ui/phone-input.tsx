@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as RPNInput from 'react-phone-number-input';
 
-import { cn } from '@/shared/lib/utils.ts';
+import { cn } from '@/shared/lib/utils';
 import { Input } from '@/shared/ui/input';
 
 type Props = Omit<React.ComponentProps<typeof Input>, 'onChange' | 'ref' | 'value'> &

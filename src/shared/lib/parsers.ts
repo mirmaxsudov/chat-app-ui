@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import type { ExtendedColumnFilter, ExtendedColumnSort } from '@/types/data-table';
 
-import { dataTableConfig } from '@/app/config/data-table.ts';
+import { dataTableConfig } from '@/app/config/data-table';
 
 const sortingItemSchema = z.object({
   id: z.string(),

@@ -4,10 +4,10 @@ import { Questionnaire as QuestionnairePrimitive } from '@shadcn/react/questionn
 import { CheckIcon } from 'lucide-react';
 import * as React from 'react';
 
-import type {Button} from '@/shared/ui/button.tsx';
+import type {Button} from '@/shared/ui/button';
 
-import { cn } from '@/shared/lib/utils.ts';
-import {  buttonVariants } from '@/shared/ui/button.tsx';
+import { cn } from '@/shared/lib/utils';
+import {  buttonVariants } from '@/shared/ui/button';
 
 const Questionnaire = ({
   className,

@@ -9,9 +9,9 @@ import {
 import { useEffect, useState } from 'react';
 
 import { observeNearViewport, ProgressiveAttachmentImage } from '@/modules/message';
-import { cn } from '@/shared/lib/utils.ts';
-import { MediaThumbnail } from '@/shared/ui/media-thumbnail.tsx';
-import { VideoDialog } from '@/shared/ui/video-dialog.tsx';
+import { cn } from '@/shared/lib/utils';
+import { MediaThumbnail } from '@/shared/ui/media-thumbnail';
+import { VideoDialog } from '@/shared/ui/video-dialog';
 
 const formatFileSize = (bytes: number) => {
   if (!Number.isFinite(bytes) || bytes < 1) return '0 B';

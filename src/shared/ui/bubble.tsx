@@ -5,7 +5,7 @@ import { useRender } from '@base-ui/react/use-render';
 import { cva  } from 'class-variance-authority';
 import * as React from 'react';
 
-import { cn } from '@/shared/lib/utils.ts';
+import { cn } from '@/shared/lib/utils';
 
 const BubbleGroup = ({ className, ...props }: React.ComponentProps<'div'>) => (
     <div

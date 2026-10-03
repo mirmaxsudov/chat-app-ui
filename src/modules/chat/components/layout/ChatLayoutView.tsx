@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import type { RealtimeConnectionStatus } from '@/modules/presence';
 
 import { ConversationList } from '@/modules/chat';
-import { cn } from '@/shared/lib/utils.ts';
+import { cn } from '@/shared/lib/utils';
 
 interface ChatLayoutViewProps {
   activeChatId: string | null;

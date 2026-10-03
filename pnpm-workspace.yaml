@@ -1,4 +1,4 @@
 allowBuilds:
   esbuild: true
 minimumReleaseAgeExclude:
-  - extensionless-imports@0.1.0
+  - extensionless-imports@0.3.1

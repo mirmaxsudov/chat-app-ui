@@ -6,7 +6,7 @@ import {
   NewChatDialog,
   useConversationList
 } from '@/modules/chat';
-import { usePresenceStore } from '@/modules/presence';
+import { usePresenceStore } from '@/modules/presence/store/presence-store';
 
 interface ChatPageProps {
   activeChatId: string | null;

@@ -1,7 +1,7 @@
 import { Popover as PopoverPrimitive } from '@base-ui/react/popover';
 import * as React from 'react';
 
-import { cn } from '@/shared/lib/utils.ts';
+import { cn } from '@/shared/lib/utils';
 
 const Popover = ({ ...props }: PopoverPrimitive.Root.Props) => <PopoverPrimitive.Root data-slot='popover' {...props} />
 

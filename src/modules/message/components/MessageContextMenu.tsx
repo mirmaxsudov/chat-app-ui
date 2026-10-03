@@ -12,7 +12,7 @@ import {
   removeMessageFromHistory,
   replaceMessageHistory
 } from '@/modules/message';
-import { copyToClipboard } from '@/shared/lib/clipboard.ts';
+import { copyToClipboard } from '@/shared/lib/clipboard';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,7 +30,7 @@ import {
   ContextMenuGroup,
   ContextMenuItem,
   ContextMenuTrigger
-} from '@/shared/ui/context-menu.tsx';
+} from '@/shared/ui/context-menu';
 import { Spinner } from '@/shared/ui/spinner';
 import { deleteMessage } from '@/utils/api';
 

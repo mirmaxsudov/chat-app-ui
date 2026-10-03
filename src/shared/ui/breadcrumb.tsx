@@ -3,7 +3,7 @@ import { useRender } from '@base-ui/react/use-render';
 import { ChevronRightIcon, MoreHorizontalIcon } from 'lucide-react';
 import * as React from 'react';
 
-import { cn } from '@/shared/lib/utils.ts';
+import { cn } from '@/shared/lib/utils';
 
 const Breadcrumb = ({ className, ...props }: React.ComponentProps<'nav'>) => (
     <nav aria-label='breadcrumb' className={cn(className)} data-slot='breadcrumb' {...props} />
